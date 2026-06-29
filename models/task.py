@@ -1,4 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime
+from sqlalchemy.orm import Mapped, mapped_column
+from datetime import datetime
 from sqlalchemy.sql import func
 from database import Base
 
@@ -6,16 +8,15 @@ from database import Base
 class TaskDB(Base):
     __tablename__ = "tasks"
 
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
-    title = Column(String, nullable=False)
-    description = Column(String, nullable=True)
+    title :Mapped[str]= mapped_column( nullable=False)
+    description :Mapped[str]= mapped_column( nullable=True)
 
-    completed = Column(Boolean, default=False)
+    completed :Mapped[bool]= mapped_column( default=False)
 
-    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
-    assigned_to = Column(Integer, ForeignKey("users.id"), nullable=True)
+    project_id :Mapped[int]= mapped_column(ForeignKey("projects.id"), nullable=False)
+    assigned_to :Mapped[int]= mapped_column( ForeignKey("users.user_id"), nullable=True)
 
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
-
-    created_at = Column(DateTime, server_default=func.now())
+    created_by :Mapped[int]= mapped_column( ForeignKey("users.user_id"), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())

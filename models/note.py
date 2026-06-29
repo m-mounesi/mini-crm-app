@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import String, ForeignKey, DateTime
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 from database import Base
 
@@ -6,13 +7,13 @@ from database import Base
 class NoteDB(Base):
     __tablename__ = "notes"
 
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
-    content = Column(String, nullable=False)
+    content: Mapped[str] = mapped_column(String, nullable=False)
 
-    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=True)
-    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id"), nullable=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), nullable=True)
 
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_by: Mapped[int] = mapped_column(ForeignKey("users.user_id"), nullable=False)
 
-    created_at = Column(DateTime, server_default=func.now())
+    created_at: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now())

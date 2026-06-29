@@ -1,4 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from datetime import datetime
+
+from sqlalchemy import String, ForeignKey, DateTime
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 from database import Base
 
@@ -6,12 +9,12 @@ from database import Base
 class ProjectDB(Base):
     __tablename__ = "projects"
 
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
-    title = Column(String, nullable=False)
-    status = Column(String, default="active")
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="active")
 
-    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False)
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id"), nullable=False)
+    created_by: Mapped[int] = mapped_column(ForeignKey("users.user_id"), nullable=False)
 
-    created_at = Column(DateTime, server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())

@@ -30,11 +30,11 @@ def get_customers(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
-    return service.get_customers(db, skip, limit)
+    return service.get_customers(db, current_user, skip, limit)
 
 
 # GET BY ID
-@router.get("/{customer_id}", response_model=list[CustomerResponse])
+@router.get("/{customer_id}", response_model=CustomerResponse)
 def get_customer(customer_id: int, db: Session = Depends(get_db)):
     customer = service.get_customer(db, customer_id)
 

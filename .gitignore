@@ -40,5 +40,5 @@ dist/
 build/
 *.egg-info/
 
-# uv / pip tools lock (اختیاری)
+# uv / pip tools lock 
 uv.lock

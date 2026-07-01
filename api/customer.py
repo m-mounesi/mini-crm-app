@@ -24,8 +24,13 @@ def create_customer(
 
 # GET ALL
 @router.get("/", response_model=list[CustomerResponse])
-def get_customers(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return service.repo.get_all(db, skip, limit)
+def get_customers(
+    skip: int = 0,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    return service.get_customers(db, skip, limit)
 
 
 # GET BY ID

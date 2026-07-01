@@ -8,16 +8,17 @@ SQLALCHEMY_DATABASE_URL = f"sqlite:///{sqlite_file_name}"
 
 # Connect to the DB
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False}
-    )
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
 
 # Operation Session
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 # Base Model
 class Base(DeclarativeBase):
-    pass    
+    pass
+
 
 # dependency to give a session
 def get_db():

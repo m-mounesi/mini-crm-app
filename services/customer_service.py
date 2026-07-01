@@ -3,7 +3,6 @@ from models.customer import CustomerDB
 
 
 class CustomerService:
-
     def __init__(self):
         self.repo = CustomerRepository()
 
@@ -14,7 +13,7 @@ class CustomerService:
             email=data.email,
             phone=data.phone,
             description=data.description,
-            created_by=user_id
+            created_by=user_id,
         )
 
         return self.repo.create(db, customer)

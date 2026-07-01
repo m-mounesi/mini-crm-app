@@ -8,11 +8,13 @@ class CustomerCreate(BaseModel):
     phone: Optional[str] = None
     description: Optional[str] = None
 
+
 class CustomerUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
     phone: Optional[str] = None
     description: Optional[str] = None
+
 
 class CustomerResponse(BaseModel):
     id: int

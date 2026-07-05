@@ -20,3 +20,14 @@ def create_project(
 
 
 # GET ALL
+@router.get("/", response_model=list[ProjectResponse])
+def get_projects(db: Session = Depends(get_db), user=Depends(get_current_user)):
+    return service.get_projects(db, user)
+
+
+# GET BY ID
+@router.get("/{project_id}", response_model=ProjectResponse)
+def get_project(
+    project_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)
+):
+    return service.get_project(db, project_id, user)

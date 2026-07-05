@@ -92,7 +92,7 @@ def admin(current_user: dict = Depends(require_role("admin"))):
 
 # Refresh Token Endpoint
 # =========================
-@router.post("/refresh")
+@router.post("/refresh", status_code=status.HTTP_200_OK)
 def refresh(refresh_token: str, db: Session = Depends(get_db)):
     logger.info("Refresh token attempt")
 

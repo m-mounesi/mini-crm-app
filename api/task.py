@@ -25,10 +25,20 @@ def get_tasks(project_id: int, db: Session = Depends(get_db)):
     return service.get_tasks(db, project_id)
 
 
+# GET BY ID
+@router.get("/{task_id}", response_model=TaskResponse)
+def get_task(
+    task_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)
+):
+    return service.get_task(db, task_id, user["user_id"])
+
+
 # TOGGLE STATUS
 @router.patch("/{task_id}/toggle")
-def toggle_task(task_id: int, db: Session = Depends(get_db)):
-    task = service.toggle_task(db, task_id)
+def toggle_task(
+    task_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)
+):
+    task = service.toggle_task(db, task_id, user["user_id"])
 
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")

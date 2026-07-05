@@ -35,8 +35,12 @@ def get_customers(
 
 # GET BY ID
 @router.get("/{customer_id}", response_model=CustomerResponse)
-def get_customer(customer_id: int, db: Session = Depends(get_db)):
-    customer = service.get_customer(db, customer_id)
+def get_customer(
+    customer_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    customer = service.get_customer(db, customer_id, current_user["user_id"])
 
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
@@ -47,9 +51,12 @@ def get_customer(customer_id: int, db: Session = Depends(get_db)):
 # UPDATE
 @router.put("/{customer_id}", response_model=CustomerResponse)
 def update_customer(
-    customer_id: int, data: CustomerUpdate, db: Session = Depends(get_db)
+    customer_id: int,
+    data: CustomerUpdate,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
 ):
-    customer = service.update_customer(db, customer_id, data)
+    customer = service.update_customer(db, customer_id, data, current_user["user_id"])
 
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
@@ -59,8 +66,12 @@ def update_customer(
 
 # Delete
 @router.delete("/{customer_id}")
-def delete_customer(customer_id: int, db: Session = Depends(get_db)):
-    result = service.delete_customer(db, customer_id)
+def delete_customer(
+    customer_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    result = service.delete_customer(db, customer_id, current_user["user_id"])
 
     if not result:
         raise HTTPException(status_code=404, detail="Customer not found")

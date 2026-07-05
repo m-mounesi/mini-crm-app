@@ -11,7 +11,7 @@ class TaskRepository:
     def get_by_id(self, db, task_id: int):
         return db.query(TaskDB).filter(TaskDB.id == task_id).first()
 
-    def get_all(self, db, project_id: int = None):
+    def get_all(self, db, project_id: int):
         query = db.query(TaskDB)
 
         if project_id:

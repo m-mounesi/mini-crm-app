@@ -1,3 +1,5 @@
+from fastapi import HTTPException
+
 from repositories.task_repository import TaskRepository
 from models.task import TaskDB
 
@@ -20,10 +22,19 @@ class TaskService:
     def get_tasks(self, db, project_id: int):
         return self.repo.get_all(db, project_id)
 
-    def get_task(self, db, task_id: int):
+    def get_task(self, db, task_id: int, user_id: int):
+        if not self.is_owner(db, task_id, user_id):
+            raise HTTPException(
+                status_code=403, detail="Not authorized to access this task"
+            )
         return self.repo.get_by_id(db, task_id)
 
-    def toggle_task(self, db, task_id: int):
+    def toggle_task(self, db, task_id: int, user_id: int):
+        if not self.is_owner(db, task_id, user_id):
+            raise HTTPException(
+                status_code=403, detail="Not authorized to access this task"
+            )
+
         task = self.repo.get_by_id(db, task_id)
 
         if not task:
@@ -31,3 +42,10 @@ class TaskService:
 
         task.completed = not task.completed
         return self.repo.update(db, task)
+        #   Owner check function
+
+    def is_owner(self, db, customer_id: int, user_id: int):
+        customer = self.repo.get_by_id(db, customer_id)
+        if not customer:
+            raise HTTPException(status_code=404, detail="Customer not found")
+        return customer.created_by == user_id

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from schemas.task import TaskCreate, TaskResponse
+from security.rbac import require_permission
 from services.task_service import TaskService
 from security.auth import get_current_user
 
@@ -14,21 +15,32 @@ service = TaskService()
 # CREATE Task
 @router.post("/", response_model=TaskResponse)
 def create_task(
-    data: TaskCreate, db: Session = Depends(get_db), user=Depends(get_current_user)
+    data: TaskCreate,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+    dependencies=Depends(require_permission("task.create")),
 ):
     return service.create_task(db, data, user["user_id"])
 
 
 # GET ALL
 @router.get("/", response_model=list[TaskResponse])
-def get_tasks(project_id: int, db: Session = Depends(get_db)):
+def get_tasks(
+    project_id: int,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+    dependencies=Depends(require_permission("task.read")),
+):
     return service.get_tasks(db, project_id)
 
 
 # GET BY ID
 @router.get("/{task_id}", response_model=TaskResponse)
 def get_task(
-    task_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)
+    task_id: int,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+    dependencies=Depends(require_permission("task.read")),
 ):
     return service.get_task(db, task_id, user["user_id"])
 
@@ -36,7 +48,10 @@ def get_task(
 # TOGGLE STATUS
 @router.patch("/{task_id}/toggle")
 def toggle_task(
-    task_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)
+    task_id: int,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+    dependencies=Depends(require_permission("task.update")),
 ):
     task = service.toggle_task(db, task_id, user["user_id"])
 

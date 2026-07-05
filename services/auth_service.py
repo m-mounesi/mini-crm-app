@@ -41,7 +41,6 @@ class AuthService:
             {
                 "sub": user.username,
                 "user_id": user.user_id,
-                "role": user.role,
                 "type": "access",
             }
         )
@@ -50,7 +49,6 @@ class AuthService:
             {
                 "sub": user.username,
                 "user_id": user.user_id,
-                "role": user.role,
                 "type": "refresh",
             }
         )

@@ -7,7 +7,6 @@ from services.auth_service import AuthService
 from repositories.user_repository import UserRepository
 from core.logger import get_logger
 from fastapi.security import OAuth2PasswordRequestForm
-from security.rbac import require_role
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -81,13 +80,6 @@ def logout(refresh_token: str, db: Session = Depends(get_db)):
     logger.info("User logged out successfully")
 
     return {"message": "Logged out successfully"}
-
-
-# Admin Endpoints (Require admin role)
-# =========================
-@router.get("/admin")
-def admin(current_user: dict = Depends(require_role("admin"))):
-    return {"message": f"Welcome, admin access granted for {current_user['username']}!"}
 
 
 # Refresh Token Endpoint

@@ -7,8 +7,12 @@ from security.password import hash_password, verify_password
 from security.jwt import create_access_token, create_refresh_token, decode_refresh_token
 from core.logger import get_logger, get_error_logger
 
+from services.rbac_service import RBACService
+
+
 logger = get_logger("AuthService")
 error_logger = get_error_logger()
+rbac_service = RBACService()
 
 
 class AuthService:
@@ -37,15 +41,18 @@ class AuthService:
         if not verify_password(password, user.hashed_password):
             return None
 
-        access = create_access_token(
+        context = rbac_service.build_user_context(db, user.user_id)
+
+        access_token = create_access_token(
             {
                 "sub": user.username,
                 "user_id": user.user_id,
-                "type": "access",
+                "roles": context["roles"],
+                "permissions": context["permissions"],
             }
         )
 
-        refresh = create_refresh_token(
+        refresh_token = create_refresh_token(
             {
                 "sub": user.username,
                 "user_id": user.user_id,
@@ -53,7 +60,7 @@ class AuthService:
             }
         )
 
-        return {"access_token": access, "refresh_token": refresh}
+        return {"access_token": access_token, "refresh_token": refresh_token}
 
     def logout(self, db, refresh_token: str):
         logger.info("Logout attempt")

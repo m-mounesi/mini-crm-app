@@ -3,7 +3,7 @@ from security.auth import get_current_user
 
 
 def require_permission(permission: str):
-    def wrapper(current_user=Depends(get_current_user)):
+    def checker(current_user=Depends(get_current_user)):
         if "admin" in current_user["roles"]:
             return current_user
 
@@ -12,4 +12,4 @@ def require_permission(permission: str):
 
         return current_user
 
-    return wrapper
+    return checker

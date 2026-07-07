@@ -8,7 +8,7 @@ class RefreshTokenDB(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     # connection to user
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
 
     # the token itself
     token = Column(String, unique=True, index=True, nullable=False)

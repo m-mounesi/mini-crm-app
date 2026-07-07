@@ -7,7 +7,7 @@ class UserRole(Base):
 
     id = Column(Integer, primary_key=True)
 
-    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), index=True)
     role_id = Column(Integer, ForeignKey("roles.id"), index=True)
 
     __table_args__ = (UniqueConstraint("user_id", "role_id"),)

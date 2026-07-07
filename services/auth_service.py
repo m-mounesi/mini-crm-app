@@ -80,6 +80,7 @@ class AuthService:
 
         # 1 - Decode and verify the jwt refresh token
         payload = decode_refresh_token(refresh_token)
+        logger.info(f"payload data {payload}")
         if not payload:
             logger.warning("Invalid refresh token. cannot decode_refresh_token")
             return None

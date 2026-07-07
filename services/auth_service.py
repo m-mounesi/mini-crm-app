@@ -60,6 +60,22 @@ class AuthService:
             }
         )
 
+        logger.info(f"saving refresh token for user_id: {user.user_id} in DB")
+
+        #   Create obj and save in DB with refresh_repo create method
+        refresh_obj = RefreshTokenDB(
+            user_id=user.user_id,
+            token=refresh_token,
+            expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+        )
+
+        if self.refresh_repo.create(db, refresh_obj):
+            logger.info(
+                f"Refresh token saved for user_id: {user.user_id} successfully in db"
+            )
+
+        logger.info(f"User logged in successfully: {username}")
+
         return {"access_token": access_token, "refresh_token": refresh_token}
 
     def logout(self, db, refresh_token: str):
@@ -81,7 +97,7 @@ class AuthService:
         # 1 - Decode and verify the jwt refresh token
         payload = decode_refresh_token(refresh_token)
         logger.info(f"payload data {payload}")
-        if not payload:
+        if payload is None:
             logger.warning("Invalid refresh token. cannot decode_refresh_token")
             return None
 

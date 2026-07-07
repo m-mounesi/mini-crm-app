@@ -2,7 +2,7 @@ from models.refresh_token import RefreshTokenDB
 
 
 class RefreshTokenRepository:
-    def create(self, db, token_obj):
+    def create(self, db, token_obj: RefreshTokenDB):
         db.add(token_obj)
         db.commit()
         db.refresh(token_obj)

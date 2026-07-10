@@ -11,9 +11,4 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    return {
-        "user_id": payload["user_id"],
-        "username": payload["sub"],
-        "roles": payload.get("roles", []),
-        "permissions": payload.get("permissions", []),
-    }
+    return {"user_id": payload["user_id"], "username": payload["sub"]}

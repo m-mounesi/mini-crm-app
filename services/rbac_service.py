@@ -1,5 +1,4 @@
 from repositories.rbac_repository import RBACRepository
-
 from models.user_role import UserRole
 from models.role import Role
 

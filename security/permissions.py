@@ -1,15 +1,21 @@
-from enum import Enum
+from fastapi import Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from core.database import get_db
+from security.auth import get_current_user
+from services.authorization_service import AuthorizationService
 
 
-class Permission(str, Enum):
-    CUSTOMER_READ = "customer:read"
-    CUSTOMER_WRITE = "customer:write"
-    CUSTOMER_DELETE = "customer:delete"
+service = AuthorizationService()
 
-    PROJECT_READ = "project:read"
-    PROJECT_WRITE = "project:write"
-    PROJECT_DELETE = "project:delete"
 
-    TASK_READ = "task:read"
-    TASK_WRITE = "task:write"
-    TASK_DELETE = "task:delete"
+def require_permission(permission: str):
+    def checker(user=Depends(get_current_user), db: Session = Depends(get_db)):
+        allowed = service.has_permission(db, user["user_id"], permission)
+
+        if not allowed:
+            raise HTTPException(status_code=403, detail="Permission denied")
+
+        return user
+
+    return checker

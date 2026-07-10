@@ -41,15 +41,8 @@ class AuthService:
         if not verify_password(password, user.hashed_password):
             return None
 
-        context = rbac_service.build_user_context(db, user.user_id)
-
         access_token = create_access_token(
-            {
-                "sub": user.username,
-                "user_id": user.user_id,
-                "roles": context["roles"],
-                "permissions": context["permissions"],
-            }
+            {"sub": user.username, "user_id": user.user_id, "type": "access"}
         )
 
         refresh_token = create_refresh_token(
@@ -76,7 +69,11 @@ class AuthService:
 
         logger.info(f"User logged in successfully: {username}")
 
-        return {"access_token": access_token, "refresh_token": refresh_token}
+        return {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "token_type": "bearer",
+        }
 
     def logout(self, db, refresh_token: str):
         logger.info("Logout attempt")

@@ -19,3 +19,27 @@ class RBACRepository:
             .filter(UserRole.user_id == user_id)
             .all()
         )
+
+    def get_role_by_name(self, db, name):
+        return db.query(Role).filter(Role.name == name).first()
+
+    def get_permission_by_name(self, db, name):
+        return db.query(Permission).filter(Permission.name == name).first()
+
+    def assign_role_to_user(self, db, user_id, role_id):
+        obj = UserRole(user_id=user_id, role_id=role_id)
+
+        db.add(obj)
+        db.commit()
+        db.refresh(obj)
+
+        return obj
+
+    def assign_permission_to_role(self, db, role_id, permission_id):
+        obj = RolePermission(role_id=role_id, permission_id=permission_id)
+
+        db.add(obj)
+        db.commit()
+        db.refresh(obj)
+
+        return obj

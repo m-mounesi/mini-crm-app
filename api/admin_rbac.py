@@ -4,11 +4,11 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from services.rbac_management_service import RBACManagementService
 from security.permissions import require_permission
-
+from core.logger import get_logger
 
 router = APIRouter(prefix="/admin/rbac", tags=["RBAC"])
 
-
+logger = get_logger("admin_rbac")
 service = RBACManagementService()
 
 

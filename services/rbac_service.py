@@ -1,6 +1,5 @@
 from repositories.rbac_repository import RBACRepository
 from models.user_role import UserRole
-from models.role import Role
 
 
 class RBACService:
@@ -14,10 +13,11 @@ class RBACService:
         return {"roles": roles, "permissions": permissions}
 
     def assign_role(self, db, user_id: int, role_name: str):
-        role = db.query(Role).filter(Role.name == role_name).first()
-
+        role = self.repo.get_role_by_name(db, role_name)
         if not role:
-            return None
+            raise ValueError("Role not found")
+
+        exists = self.repo.user_has_role(db, user_id, role.id)
 
         exists = (
             db.query(UserRole)

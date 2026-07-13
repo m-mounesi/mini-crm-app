@@ -30,6 +30,8 @@ class AuthService:
         }
 
         user = self.repo.create_user(db, user_data)
+        rbac_service.assign_role(db=db, user_id=user.user_id, role_name="viewer")
+
         return user
 
     def login(self, db, username, password):

@@ -1,13 +1,16 @@
-from sqlalchemy import Column, Integer, ForeignKey, UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column
+
 from core.database import Base
 
 
-class RolePermission(Base):
+class RolePermissionDB(Base):
     __tablename__ = "role_permissions"
 
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
-    role_id = Column(Integer, ForeignKey("roles.id"), index=True)
-    permission_id = Column(Integer, ForeignKey("permissions.id"), index=True)
+    role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), index=True)
+
+    permission_id: Mapped[int] = mapped_column(ForeignKey("permissions.id"), index=True)
 
     __table_args__ = (UniqueConstraint("role_id", "permission_id"),)

@@ -1,8 +1,8 @@
 """init
 
-Revision ID: aaccccdd2c96
+Revision ID: 9f0b249728ca
 Revises:
-Create Date: 2026-07-07 21:13:57.818983
+Create Date: 2026-07-13 20:56:15.972559
 
 """
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "aaccccdd2c96"
+revision: str = "9f0b249728ca"
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,20 +28,18 @@ def upgrade() -> None:
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(op.f("ix_permissions_id"), "permissions", ["id"], unique=False)
     op.create_index(op.f("ix_permissions_name"), "permissions", ["name"], unique=True)
     op.create_table(
         "roles",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("name", sa.String(length=30), nullable=False),
+        sa.Column("name", sa.String(length=50), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(op.f("ix_roles_id"), "roles", ["id"], unique=False)
     op.create_index(op.f("ix_roles_name"), "roles", ["name"], unique=True)
     op.create_table(
         "users",
         sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("username", sa.String(), nullable=False),
+        sa.Column("username", sa.String(length=50), nullable=False),
         sa.Column("hashed_password", sa.String(), nullable=False),
         sa.Column(
             "created_at",
@@ -58,6 +56,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("user_id"),
     )
     op.create_index(op.f("ix_users_created_at"), "users", ["created_at"], unique=False)
+    op.create_index(op.f("ix_users_username"), "users", ["username"], unique=True)
     op.create_table(
         "customers",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -106,8 +105,8 @@ def upgrade() -> None:
     op.create_table(
         "role_permissions",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("role_id", sa.Integer(), nullable=True),
-        sa.Column("permission_id", sa.Integer(), nullable=True),
+        sa.Column("role_id", sa.Integer(), nullable=False),
+        sa.Column("permission_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["permission_id"],
             ["permissions.id"],
@@ -134,8 +133,8 @@ def upgrade() -> None:
     op.create_table(
         "user_roles",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("user_id", sa.Integer(), nullable=True),
-        sa.Column("role_id", sa.Integer(), nullable=True),
+        sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.Column("role_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["role_id"],
             ["roles.id"],
@@ -253,12 +252,11 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_refresh_tokens_id"), table_name="refresh_tokens")
     op.drop_table("refresh_tokens")
     op.drop_table("customers")
+    op.drop_index(op.f("ix_users_username"), table_name="users")
     op.drop_index(op.f("ix_users_created_at"), table_name="users")
     op.drop_table("users")
     op.drop_index(op.f("ix_roles_name"), table_name="roles")
-    op.drop_index(op.f("ix_roles_id"), table_name="roles")
     op.drop_table("roles")
     op.drop_index(op.f("ix_permissions_name"), table_name="permissions")
-    op.drop_index(op.f("ix_permissions_id"), table_name="permissions")
     op.drop_table("permissions")
     # ### end Alembic commands ###

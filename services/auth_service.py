@@ -36,9 +36,13 @@ class AuthService:
         user = self.repo.get_user(db, username)
 
         if not user:
+            logger.info(f"User {user} not found!")
             return None
 
         if not verify_password(password, user.hashed_password):
+            logger.info(
+                f"Attempt to loging username: {user.username}, with a wrong password"
+            )
             return None
 
         access_token = create_access_token(

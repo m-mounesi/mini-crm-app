@@ -1,5 +1,5 @@
 from repositories.rbac_repository import RBACRepository
-from models.user_role import UserRole
+from models.user_role import UserRoleDB
 
 
 class RBACService:
@@ -20,15 +20,15 @@ class RBACService:
         exists = self.repo.user_has_role(db, user_id, role.id)
 
         exists = (
-            db.query(UserRole)
-            .filter(UserRole.user_id == user_id, UserRole.role_id == role.id)
+            db.query(UserRoleDB)
+            .filter(UserRoleDB.user_id == user_id, UserRoleDB.role_id == role.id)
             .first()
         )
 
         if exists:
             return exists
 
-        user_role = UserRole(user_id=user_id, role_id=role.id)
+        user_role = UserRoleDB(user_id=user_id, role_id=role.id)
         db.add(user_role)
         db.commit()
 

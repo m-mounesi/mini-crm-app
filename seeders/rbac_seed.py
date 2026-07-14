@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from models.role import Role
-from models.permission import Permission
-from models.role_permission import RolePermission
+from models.role import RoleDB
+from models.permission import PermissionDB
+from models.role_permission import RolePermissionDB
 
 
 ROLES = ["admin", "operator", "viewer"]
@@ -31,20 +31,22 @@ PERMISSIONS = [
 
 def seed_roles(db: Session):
     for role_name in ROLES:
-        exists = db.query(Role).filter(Role.name == role_name).first()
+        exists = db.query(RoleDB).filter(RoleDB.name == role_name).first()
 
         if not exists:
-            db.add(Role(name=role_name))
+            db.add(RoleDB(name=role_name))
 
     db.commit()
 
 
 def seed_permissions(db: Session):
     for permission_name in PERMISSIONS:
-        exists = db.query(Permission).filter(Permission.name == permission_name).first()
+        exists = (
+            db.query(PermissionDB).filter(PermissionDB.name == permission_name).first()
+        )
 
         if not exists:
-            db.add(Permission(name=permission_name))
+            db.add(PermissionDB(name=permission_name))
 
     db.commit()
 
@@ -52,21 +54,21 @@ def seed_permissions(db: Session):
 
 
 def assign_admin_permissions(db):
-    admin = db.query(Role).filter(Role.name == "admin").first()
+    admin = db.query(RoleDB).filter(RoleDB.name == "admin").first()
 
-    permissions = db.query(Permission).all()
+    permissions = db.query(PermissionDB).all()
 
     for permission in permissions:
         exists = (
-            db.query(RolePermission)
+            db.query(RolePermissionDB)
             .filter(
-                RolePermission.role_id == admin.id,
-                RolePermission.permission_id == permission.id,
+                RolePermissionDB.role_id == admin.id,
+                RolePermissionDB.permission_id == permission.id,
             )
             .first()
         )
 
     if not exists:
-        db.add(RolePermission(role_id=admin.id, permission_id=permission.id))
+        db.add(RolePermissionDB(role_id=admin.id, permission_id=permission.id))
 
     db.commit()

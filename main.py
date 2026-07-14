@@ -3,6 +3,7 @@ from api.customer import router as customer_router
 from api.project import router as project_router
 from api.auth import router as auth_router
 from api.task import router as task_router
+from api.admin_rbac import router as admin_rbac_router
 from contextlib import asynccontextmanager
 from core.database import SessionLocal
 
@@ -33,3 +34,4 @@ app.include_router(customer_router)
 app.include_router(project_router)
 app.include_router(auth_router)
 app.include_router(task_router)
+app.include_router(admin_rbac_router)

@@ -7,6 +7,8 @@ from api.admin_rbac import router as admin_rbac_router
 from contextlib import asynccontextmanager
 from core.database import SessionLocal
 
+from core.exceptions import PermissionNotFoundException, RoleNotFoundException
+from core.exception_handler import global_exception_handler
 from seeders.rbac_seed import seed_roles, seed_permissions, assign_admin_permissions
 from seeders.admin_seed import create_admin
 
@@ -35,3 +37,8 @@ app.include_router(project_router)
 app.include_router(auth_router)
 app.include_router(task_router)
 app.include_router(admin_rbac_router)
+
+app.add_exception_handler(Exception, global_exception_handler)
+
+app.add_exception_handler(PermissionNotFoundException, global_exception_handler)
+app.add_exception_handler(RoleNotFoundException, global_exception_handler)

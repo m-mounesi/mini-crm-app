@@ -6,7 +6,7 @@ class AuthorizationService:
         self.repo = RBACRepository()
 
     def has_permission(self, db, user_id: int, permission: str):
-        permissions = self.repo.get_permission_by_name(db, user_id)
+        permissions = self.repo.get_user_permissions(db, user_id)
 
         permission_names = [p[0] for p in permissions]
 

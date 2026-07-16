@@ -1,29 +1,41 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-
 from core.database import get_db
-from services.rbac_management_service import RBACManagementService
+from services.rbac_service import RBACService
 from security.permissions import require_permission
 from core.logger import get_logger
+from schemas.schema import SuccessResponse
 
 router = APIRouter(prefix="/admin/rbac", tags=["RBAC"])
 
 logger = get_logger("admin_rbac")
-service = RBACManagementService()
+service = RBACService()
 
 
 # Assign Role to User
-
-
 @router.post(
-    "/users/{user_id}/roles", dependencies=[Depends(require_permission("user.manage"))]
+    "/users/{user_id}/roles",
+    dependencies=[Depends(require_permission("user.manage"))],
 )
 def assign_role(user_id: int, role_name: str, db: Session = Depends(get_db)):
-    result = service.assign_role(db, user_id, role_name)
-    if result is None:
-        return {"message": "role or user not found"}
+    logger.info(f"Assign role attempt: user_id={user_id}, role_name={role_name}")
 
-    return {"message": "role assigned"}
+    try:
+        result = service.assign_role(db, user_id, role_name)
+
+        if result is None:
+            logger.warning(
+                f"Assign role failed: user_id={user_id}, role={role_name} not found"
+            )
+            return {"message": "role or user not found"}
+
+        logger.info(f"Role assigned successfully: user_id={user_id}, role={role_name}")
+
+        return {"message": "role assigned"}
+
+    except Exception:
+        logger.exception(f"Error assigning role: user_id={user_id}, role={role_name}")
+        raise
 
 
 # Assign Permission to Role
@@ -34,9 +46,17 @@ def assign_role(user_id: int, role_name: str, db: Session = Depends(get_db)):
 def assign_permission(
     role_name: str, permission_name: str, db: Session = Depends(get_db)
 ):
-    result = service.assign_permission(db, role_name, permission_name)
+    logger.info(
+        f"Assign permission attempt: " f"role={role_name}, permission={permission_name}"
+    )
 
-    if result is None:
-        return {"message": "role or permission not found"}
+    service.assign_permission(db, role_name, permission_name)
 
-    return {"message": "permission assigned"}
+    logger.info(
+        f"Permission assigned successfully: "
+        f"role={role_name}, permission={permission_name}"
+    )
+
+    return SuccessResponse(
+        message="Permission assigned successfully",
+    )

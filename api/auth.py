@@ -100,3 +100,16 @@ def refresh(refresh_token: str, db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Error occurred while refreshing token: {repr(e)}")
         raise HTTPException(status_code=401, detail="Invalid refresh token")
+
+
+# # Rbac Test
+# from models.user import UserDB
+
+# @router.post("/rbac-test", status_code=status.HTTP_200_OK)
+# def rbac_test(user_id: int, db: Session = Depends(get_db)):
+
+
+#     user = db.query(UserDB).filter(UserDB.user_id == user_id).first()
+
+#     print(user)
+#     return {"message": "RBAC test endpoint", "user-roles": user.roles if user else None}

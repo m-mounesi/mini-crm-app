@@ -1,17 +1,20 @@
 from models.user import UserDB
 from models.role import RoleDB
 from models.user_role import UserRoleDB
-
+from core.config import settings
 from security.password import hash_password
 
 
 def create_admin(db):
-    admin = db.query(UserDB).filter(UserDB.username == "admin").first()
+    admin = db.query(UserDB).filter(UserDB.username == settings.ADMIN_USERNAME).first()
 
     if admin:
         return admin
 
-    admin = UserDB(username="admin", hashed_password=hash_password("admin1234"))
+    admin = UserDB(
+        username=settings.ADMIN_USERNAME,
+        hashed_password=hash_password(settings.ADMIN_PASSWORD),
+    )
 
     db.add(admin)
     db.commit()

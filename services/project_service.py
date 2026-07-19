@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 
+from models.user import UserDB
 from repositories.project_repository import ProjectRepository
 from models.project import ProjectDB
 from repositories.user_repository import UserRepository
@@ -22,8 +23,8 @@ class ProjectService:
             db, user_id=user["user_id"], is_admin=user["role"] == "admin"
         )
 
-    def get_project(self, db, project_id: int, current_user: dict):
-        if not self.is_owner(db, project_id, current_user["user_id"]):
+    def get_project(self, db, project_id: int, current_user: UserDB):
+        if not self.is_owner(db, project_id, current_user.user_id):
             raise HTTPException(
                 status_code=403, detail="Not authorized to access this project"
             )

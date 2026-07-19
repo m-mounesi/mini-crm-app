@@ -146,3 +146,6 @@ class AuthService:
         logger.info("New access and refresh tokens created")
 
         return {"access_token": new_access, "refresh_token": new_refresh}
+
+    def get_user(self, db, username: str):
+        return self.repo.get_user(db, username)

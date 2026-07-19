@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from core.database import get_db
+from models.user import UserDB
 from services.customer_service import CustomerService
 from schemas.customer import CustomerCreate, CustomerUpdate, CustomerResponse
 
@@ -18,10 +19,10 @@ service = CustomerService()
 def create_customer(
     data: CustomerCreate,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("customer.create")),
 ):
-    return service.create_customer(db, data, current_user["user_id"])
+    return service.create_customer(db, data, current_user.user_id)
 
 
 # GET ALL
@@ -30,7 +31,7 @@ def get_customers(
     skip: int = 0,
     limit: int = 10,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("customer.read")),
 ):
     return service.get_customers(db, current_user, skip, limit)
@@ -41,10 +42,10 @@ def get_customers(
 def get_customer(
     customer_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("customer.read")),
 ):
-    customer = service.get_customer(db, customer_id, current_user["user_id"])
+    customer = service.get_customer(db, customer_id, current_user.user_id)
 
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
@@ -58,10 +59,10 @@ def update_customer(
     customer_id: int,
     data: CustomerUpdate,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("customer.update")),
 ):
-    customer = service.update_customer(db, customer_id, data, current_user["user_id"])
+    customer = service.update_customer(db, customer_id, data, current_user.user_id)
 
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
@@ -74,10 +75,10 @@ def update_customer(
 def delete_customer(
     customer_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("customer.delete")),
 ):
-    result = service.delete_customer(db, customer_id, current_user["user_id"])
+    result = service.delete_customer(db, customer_id, current_user.user_id)
 
     if not result:
         raise HTTPException(status_code=404, detail="Customer not found")

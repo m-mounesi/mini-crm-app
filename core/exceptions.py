@@ -19,3 +19,8 @@ class PermissionNotFoundException(AppException):
 class PermissionDeniedException(AppException):
     status_code = 403
     error_type = "PermissionDenied"
+
+
+class UnauthorizedException(AppException):
+    status_code = 401
+    error_type = "Unauthorized"

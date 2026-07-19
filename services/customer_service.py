@@ -1,3 +1,4 @@
+from models.user import UserDB
 from repositories.customer_repository import CustomerRepository
 from models.customer import CustomerDB
 from fastapi import HTTPException
@@ -29,11 +30,11 @@ class CustomerService:
         return self.repo.get_by_id(db, customer_id)
 
     # GET ALL
-    def get_customers(self, db, user: dict, skip: int = 0, limit: int = 10):
+    def get_customers(self, db, user: UserDB, skip: int = 0, limit: int = 10):
         return self.repo.get_all(
             db,
-            user_id=user["user_id"],
-            is_admin=user["role"] == "admin",
+            user_id=user.user_id,
+            is_admin=any(role.name == "admin" for role in user.roles),
             skip=skip,
             limit=limit,
         )

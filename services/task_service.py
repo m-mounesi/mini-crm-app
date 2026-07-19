@@ -2,6 +2,10 @@ from fastapi import HTTPException
 
 from repositories.task_repository import TaskRepository
 from models.task import TaskDB
+from services.project_service import ProjectService
+
+project_service = ProjectService()
+is_project_owner = project_service.is_owner
 
 
 class TaskService:
@@ -19,7 +23,11 @@ class TaskService:
 
         return self.repo.create(db, task)
 
-    def get_tasks(self, db, project_id: int):
+    def get_tasks(self, db, project_id: int, user_id: int):
+        if not is_project_owner(db, project_id, user_id):
+            raise HTTPException(
+                status_code=403, detail="Not authorized to access this task"
+            )
         return self.repo.get_all(db, project_id)
 
     def get_task(self, db, task_id: int, user_id: int):

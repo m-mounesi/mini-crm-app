@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from core.database import get_db
+from models.user import UserDB
 from schemas.task import TaskCreate, TaskResponse
-from security.rbac import require_permission
+from security.dependencies import require_permission
 from services.task_service import TaskService
 from security.auth import get_current_user
 
@@ -17,10 +18,10 @@ service = TaskService()
 def create_task(
     data: TaskCreate,
     db: Session = Depends(get_db),
-    user=Depends(get_current_user),
+    user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("task.create")),
 ):
-    return service.create_task(db, data, user["user_id"])
+    return service.create_task(db, data, user.user_id)
 
 
 # GET ALL
@@ -28,10 +29,10 @@ def create_task(
 def get_tasks(
     project_id: int,
     db: Session = Depends(get_db),
-    user=Depends(get_current_user),
+    user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("task.read")),
 ):
-    return service.get_tasks(db, project_id)
+    return service.get_tasks(db, project_id, user_id=user.user_id)
 
 
 # GET BY ID
@@ -39,10 +40,10 @@ def get_tasks(
 def get_task(
     task_id: int,
     db: Session = Depends(get_db),
-    user=Depends(get_current_user),
+    user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("task.read")),
 ):
-    return service.get_task(db, task_id, user["user_id"])
+    return service.get_task(db, task_id, user.user_id)
 
 
 # TOGGLE STATUS
@@ -50,10 +51,10 @@ def get_task(
 def toggle_task(
     task_id: int,
     db: Session = Depends(get_db),
-    user=Depends(get_current_user),
+    user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("task.update")),
 ):
-    task = service.toggle_task(db, task_id, user["user_id"])
+    task = service.toggle_task(db, task_id, user.user_id)
 
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")

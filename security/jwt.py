@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from core.config import settings
+from core.exceptions import UnauthorizedException
 from core.logger import get_logger
-from fastapi import HTTPException
+from typing import Optional
+
 
 logger = get_logger("jwt")
 
@@ -45,25 +47,24 @@ def create_refresh_token(data: dict, expires_delta: timedelta | None = None):
 
 # DECODE / VERIFY TOKEN
 # =========================
-def decode_access_token(token: str):
+def decode_access_token(token: str) -> Optional[dict]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         logger.info(f"Token decoded successfully for user_id: {payload.get('user_id')}")
         return payload
     except JWTError as e:
-        logger.warning(f"Token verification failed: {str(e)}")
-        return None
+        raise UnauthorizedException(f"Token verification failed: {str(e)}")
 
 
 # DECODE / VERIFY REFRESH TOKEN
 # =========================
-def decode_refresh_token(token: str):
+def decode_refresh_token(token: str) -> Optional[dict]:
     try:
         logger.info(f"Refresh token received: {token}")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         if payload.get("type") != "refresh":
             logger.warning("Invalid token type for refresh token")
-            raise HTTPException(status_code=401, detail="Invalid token type")
+            raise UnauthorizedException("Invalid token type")
 
         logger.info(
             f"Refresh token decoded successfully for user_id: {payload.get('user_id')}"

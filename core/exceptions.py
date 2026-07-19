@@ -24,3 +24,8 @@ class PermissionDeniedException(AppException):
 class UnauthorizedException(AppException):
     status_code = 401
     error_type = "Unauthorized"
+
+
+class InvalidTokenException(AppException):
+    status_code = 401
+    error_type = "InvalidToken"

@@ -3,7 +3,6 @@ from jose import jwt, JWTError
 from core.config import settings
 from core.exceptions import UnauthorizedException
 from core.logger import get_logger
-from typing import Optional
 
 
 logger = get_logger("jwt")
@@ -19,7 +18,7 @@ REFRESH_EXPIRE_DAYS = settings.REFRESH_EXPIRE_DAYS
 # CREATE JWT TOKEN  ( ACCESS TOKEN )
 # =========================
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    logger.info(f"data received for access token creation: {data}")
+    logger.info("Creating access token for user_id=%s", data.get("user_id"))
     payload = data.copy()
 
     expire = datetime.now(timezone.utc) + (
@@ -47,7 +46,7 @@ def create_refresh_token(data: dict, expires_delta: timedelta | None = None):
 
 # DECODE / VERIFY TOKEN
 # =========================
-def decode_access_token(token: str) -> Optional[dict]:
+def decode_access_token(token: str) -> dict:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         logger.info(f"Token decoded successfully for user_id: {payload.get('user_id')}")
@@ -58,9 +57,8 @@ def decode_access_token(token: str) -> Optional[dict]:
 
 # DECODE / VERIFY REFRESH TOKEN
 # =========================
-def decode_refresh_token(token: str) -> Optional[dict]:
+def decode_refresh_token(token: str) -> dict:
     try:
-        logger.info(f"Refresh token received: {token}")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         if payload.get("type") != "refresh":
             logger.warning("Invalid token type for refresh token")
@@ -73,4 +71,4 @@ def decode_refresh_token(token: str) -> Optional[dict]:
 
     except JWTError as e:
         logger.warning(f"Refresh token verification failed: {str(e)}")
-        return None
+        raise UnauthorizedException(f"Token verification failed: {str(e)}")

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
+from core.exceptions import InvalidTokenException
 from models.refresh_token import RefreshTokenDB
 from repositories.user_repository import UserRepository
 from repositories.refresh_token_repository import RefreshTokenRepository
@@ -107,9 +108,13 @@ class AuthService:
         # 2 - DB check for the refresh token
         db_token = self.refresh_repo.get_by_token(db, refresh_token)
 
-        if not db_token or db_token.is_revoked:
+        if (
+            not db_token
+            or db_token.is_revoked
+            or db_token.expires_at < datetime.now(timezone.utc)
+        ):
             logger.warning("Refresh token not found or revoked")
-            return None
+            raise InvalidTokenException("Refresh token is invalid or has been revoked")
 
         # 3 - Revoke the old refresh token
         self.refresh_repo.revoke(db, refresh_token)

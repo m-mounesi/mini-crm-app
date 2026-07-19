@@ -1,27 +1,25 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from core.database import get_db
 from sqlalchemy.orm import Session
-from repositories.refresh_token_repository import RefreshTokenRepository
 from schemas.schema import SuccessResponse
 from services.auth_service import AuthService
-from repositories.user_repository import UserRepository
 from core.logger import get_logger
 from fastapi.security import OAuth2PasswordRequestForm
+from core.dependencies import get_auth_service
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 logger = get_logger("auth")
 error_logger = get_logger("error")
-repo = UserRepository()
-refresh_repo = RefreshTokenRepository()
-service = AuthService()
 
 
 # signup
 # =========================
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 def signup(
-    signupform: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    signupform: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+    service: AuthService = Depends(get_auth_service),
 ):
     username = signupform.username
     password = signupform.password
@@ -49,6 +47,7 @@ def signup(
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
+    service: AuthService = Depends(get_auth_service),
 ):
     logger.info(f"Login attempt for user: {form_data.username}")
     tokens = service.login(db, form_data.username, form_data.password)
@@ -69,7 +68,11 @@ def login(
 # Logout
 # =========================
 @router.post("/logout", status_code=status.HTTP_200_OK)
-def logout(refresh_token: str, db: Session = Depends(get_db)):
+def logout(
+    refresh_token: str,
+    db: Session = Depends(get_db),
+    service: AuthService = Depends(get_auth_service),
+):
     logger.info("Logout attempt")
 
     success = service.logout(db, refresh_token)
@@ -85,7 +88,11 @@ def logout(refresh_token: str, db: Session = Depends(get_db)):
 # Refresh Token Endpoint
 # =========================
 @router.post("/refresh", status_code=status.HTTP_200_OK)
-def refresh(refresh_token: str, db: Session = Depends(get_db)):
+def refresh(
+    refresh_token: str,
+    db: Session = Depends(get_db),
+    service: AuthService = Depends(get_auth_service),
+):
     logger.info("Refresh token attempt")
 
     try:

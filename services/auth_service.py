@@ -7,19 +7,17 @@ from repositories.refresh_token_repository import RefreshTokenRepository
 from security.password import hash_password, verify_password
 from security.jwt import create_access_token, create_refresh_token, decode_refresh_token
 from core.logger import get_logger, get_error_logger
-
-from services.rbac_service import RBACService
-
+from core.dependencies import get_rbac_service
 
 logger = get_logger("AuthService")
 error_logger = get_error_logger()
-rbac_service = RBACService()
+rbac_service = get_rbac_service
 
 
 class AuthService:
-    def __init__(self):
-        self.repo = UserRepository()
-        self.refresh_repo = RefreshTokenRepository()
+    def __init__(self, repo: UserRepository, refresh_repo: RefreshTokenRepository):
+        self.repo = repo
+        self.refresh_repo = refresh_repo
 
     def register(self, db, form_data):
         if self.repo.get_user(db, form_data["username"]):

@@ -7,9 +7,9 @@ from repositories.user_repository import UserRepository
 
 
 class ProjectService:
-    def __init__(self):
-        self.repo = ProjectRepository()
-        self.user_repo = UserRepository()
+    def __init__(self, repo: ProjectRepository, user_repo: UserRepository):
+        self.repo = repo
+        self.user_repo = user_repo
 
     def create_project(self, db, data, user_id: int):
         project = ProjectDB(

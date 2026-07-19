@@ -5,8 +5,8 @@ from fastapi import HTTPException
 
 
 class CustomerService:
-    def __init__(self):
-        self.repo = CustomerRepository()
+    def __init__(self, repo: CustomerRepository):
+        self.repo = repo
 
     # CREATE
     def create_customer(self, db, data, user_id: int):

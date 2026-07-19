@@ -9,7 +9,6 @@ from schemas.schema import SuccessResponse
 router = APIRouter(prefix="/admin/rbac", tags=["RBAC"])
 
 logger = get_logger("admin_rbac")
-service = RBACService()
 
 
 # Assign Role to User
@@ -17,7 +16,12 @@ service = RBACService()
     "/users/{user_id}/roles",
     dependencies=[Depends(require_permission("user.manage"))],
 )
-def assign_role(user_id: int, role_name: str, db: Session = Depends(get_db)):
+def assign_role(
+    user_id: int,
+    role_name: str,
+    service: RBACService = Depends(RBACService),
+    db: Session = Depends(get_db),
+):
     logger.info(f"Assign role attempt: user_id={user_id}, role_name={role_name}")
 
     try:
@@ -44,7 +48,10 @@ def assign_role(user_id: int, role_name: str, db: Session = Depends(get_db)):
     dependencies=[Depends(require_permission("user.manage"))],
 )
 def assign_permission(
-    role_name: str, permission_name: str, db: Session = Depends(get_db)
+    role_name: str,
+    permission_name: str,
+    db: Session = Depends(get_db),
+    service: RBACService = Depends(RBACService),
 ):
     logger.info(
         f"Assign permission attempt: " f"role={role_name}, permission={permission_name}"

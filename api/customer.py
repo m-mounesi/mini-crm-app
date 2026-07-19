@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from core.database import get_db
+from core.dependencies import get_customer_service
 from models.user import UserDB
 from services.customer_service import CustomerService
 from schemas.customer import CustomerCreate, CustomerUpdate, CustomerResponse
@@ -11,13 +12,12 @@ from security.dependencies import require_permission
 
 router = APIRouter(prefix="/customers", tags=["customers"])
 
-service = CustomerService()
-
 
 # CREATE Customer
 @router.post("/", response_model=CustomerResponse)
 def create_customer(
     data: CustomerCreate,
+    service: CustomerService = Depends(get_customer_service),
     db: Session = Depends(get_db),
     current_user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("customer.create")),
@@ -30,6 +30,7 @@ def create_customer(
 def get_customers(
     skip: int = 0,
     limit: int = 10,
+    service: CustomerService = Depends(get_customer_service),
     db: Session = Depends(get_db),
     current_user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("customer.read")),
@@ -41,6 +42,7 @@ def get_customers(
 @router.get("/{customer_id}", response_model=CustomerResponse)
 def get_customer(
     customer_id: int,
+    service: CustomerService = Depends(get_customer_service),
     db: Session = Depends(get_db),
     current_user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("customer.read")),
@@ -58,6 +60,7 @@ def get_customer(
 def update_customer(
     customer_id: int,
     data: CustomerUpdate,
+    service: CustomerService = Depends(get_customer_service),
     db: Session = Depends(get_db),
     current_user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("customer.update")),
@@ -75,6 +78,7 @@ def update_customer(
 def delete_customer(
     customer_id: int,
     db: Session = Depends(get_db),
+    service: CustomerService = Depends(get_customer_service),
     current_user: UserDB = Depends(get_current_user),
     dependencies=Depends(require_permission("customer.delete")),
 ):

@@ -7,8 +7,8 @@ logger = get_logger("rbac-service")
 
 
 class RBACService:
-    def __init__(self):
-        self.repo = RBACRepository()
+    def __init__(self, repo: RBACRepository):
+        self.repo = repo
 
     def build_user_context(self, db, user_id: int):
         logger.info(f"Building RBAC context for user_id={user_id}")

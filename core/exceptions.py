@@ -14,3 +14,8 @@ class RoleNotFoundException(AppException):
 class PermissionNotFoundException(AppException):
     status_code = 404
     error_type = "PermissionNotFound"
+
+
+class PermissionDeniedException(AppException):
+    status_code = 403
+    error_type = "PermissionDenied"

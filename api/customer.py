@@ -6,7 +6,7 @@ from services.customer_service import CustomerService
 from schemas.customer import CustomerCreate, CustomerUpdate, CustomerResponse
 
 from security.auth import get_current_user
-from security.rbac import require_permission
+from security.dependencies import require_permission
 
 router = APIRouter(prefix="/customers", tags=["customers"])
 

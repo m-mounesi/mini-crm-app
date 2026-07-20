@@ -2,13 +2,13 @@ from fastapi import HTTPException
 
 from repositories.task_repository import TaskRepository
 from models.task import TaskDB
-from core.dependencies import get_project_service
+from services.project_service import ProjectService
 
 
 class TaskService:
-    def __init__(self, repo: TaskRepository):
+    def __init__(self, repo: TaskRepository, project_service: ProjectService):
         self.repo = repo
-        self.project_service = get_project_service
+        self.project_service = project_service
 
     def create_task(self, db, data, user_id: int):
         task = TaskDB(

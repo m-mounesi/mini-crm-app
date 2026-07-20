@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from core.exceptions import UnauthorizedException
 from security.jwt import decode_access_token
-from core.dependencies import get_auth_service
+from repositories.user_repository import UserRepository
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -21,9 +21,9 @@ def get_current_user(
     if username is None:
         raise UnauthorizedException("Invalid token: missing username")
 
-    user = get_auth_service.get_user(
-        db, username
-    )  # Ensure the user exists in the database
+    repo = UserRepository()
+    user = repo.get_user(db, username)
+
     if user is None:
         raise UnauthorizedException("User not found")
 

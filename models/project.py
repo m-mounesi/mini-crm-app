@@ -11,10 +11,21 @@ class ProjectDB(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    title: Mapped[str] = mapped_column(String, nullable=False)
-    status: Mapped[str] = mapped_column(String, default="active")
+    title: Mapped[str] = mapped_column(String(100), nullable=False)
+    status: Mapped[str] = mapped_column(String(50), default="active")
 
-    customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id"), nullable=False)
-    created_by: Mapped[int] = mapped_column(ForeignKey("users.user_id"), nullable=False)
+    customer_id: Mapped[int] = mapped_column(
+        ForeignKey("customers.id"), nullable=False, index=True
+    )
+    created_by: Mapped[int] = mapped_column(
+        ForeignKey("users.user_id"), nullable=False, index=True
+    )
 
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+    updated_at: Mapped[DateTime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+    deleted_at: Mapped[DateTime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )

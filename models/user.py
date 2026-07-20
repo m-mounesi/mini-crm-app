@@ -18,7 +18,10 @@ class UserDB(Base):
     hashed_password: Mapped[str] = mapped_column(nullable=False)
 
     created_at = mapped_column(DateTime, server_default=func.now(), index=True)
-    updated_at = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[DateTime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+    deleted_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True)
     roles: Mapped[list["RoleDB"]] = relationship(
         secondary="user_roles", back_populates="users"
     )

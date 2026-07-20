@@ -17,3 +17,10 @@ class NoteDB(Base):
     created_by: Mapped[int] = mapped_column(ForeignKey("users.user_id"), nullable=False)
 
     created_at: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now())
+
+    updated_at = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+    deleted_at: Mapped[DateTime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from api.customer import router as customer_router
 from api.project import router as project_router
 from api.auth import router as auth_router
@@ -6,8 +7,6 @@ from api.task import router as task_router
 from api.admin_rbac import router as admin_rbac_router
 from contextlib import asynccontextmanager
 from core.database import SessionLocal
-
-from core.exceptions import PermissionNotFoundException, RoleNotFoundException
 from core.exception_handler import global_exception_handler
 from seeders.rbac_seed import seed_roles, seed_permissions, assign_admin_permissions
 from seeders.admin_seed import create_admin
@@ -32,6 +31,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Mini CRM", lifespan=lifespan)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 app.include_router(customer_router)
 app.include_router(project_router)
 app.include_router(auth_router)
@@ -39,6 +47,3 @@ app.include_router(task_router)
 app.include_router(admin_rbac_router)
 
 app.add_exception_handler(Exception, global_exception_handler)
-
-app.add_exception_handler(PermissionNotFoundException, global_exception_handler)
-app.add_exception_handler(RoleNotFoundException, global_exception_handler)

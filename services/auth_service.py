@@ -7,17 +7,22 @@ from repositories.refresh_token_repository import RefreshTokenRepository
 from security.password import hash_password, verify_password
 from security.jwt import create_access_token, create_refresh_token, decode_refresh_token
 from core.logger import get_logger, get_error_logger
-from core.dependencies import get_rbac_service
+from services.rbac_service import RBACService
 
 logger = get_logger("AuthService")
 error_logger = get_error_logger()
-rbac_service = get_rbac_service
 
 
 class AuthService:
-    def __init__(self, repo: UserRepository, refresh_repo: RefreshTokenRepository):
+    def __init__(
+        self,
+        repo: UserRepository,
+        refresh_repo: RefreshTokenRepository,
+        rbac_service: RBACService,
+    ):
         self.repo = repo
         self.refresh_repo = refresh_repo
+        self.rbac_service = rbac_service
 
     def register(self, db, form_data):
         if self.repo.get_user(db, form_data["username"]):
@@ -29,7 +34,7 @@ class AuthService:
         }
 
         user = self.repo.create_user(db, user_data)
-        rbac_service.assign_role(db=db, user_id=user.user_id, role_name="viewer")
+        self.rbac_service.assign_role(db=db, user_id=user.user_id, role_name="viewer")
 
         return user
 
@@ -37,7 +42,7 @@ class AuthService:
         user = self.repo.get_user(db, username)
 
         if not user:
-            logger.info(f"User {user} not found!")
+            logger.info(f"User {username} not found!")
             return None
 
         if not verify_password(password, user.hashed_password):

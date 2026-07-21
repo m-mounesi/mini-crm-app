@@ -18,9 +18,11 @@ class ProjectService:
 
         return self.repo.create(db, project)
 
-    def get_projects(self, db, user):
+    def get_projects(self, db, user: UserDB):
         return self.repo.get_all(
-            db, user_id=user["user_id"], is_admin=user["role"] == "admin"
+            db,
+            user_id=user.user_id,
+            is_admin=any(role.name == "admin" for role in user.roles),
         )
 
     def get_project(self, db, project_id: int, current_user: UserDB):

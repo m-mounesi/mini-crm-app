@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from core.database import get_db
+from core.dependencies import get_rbac_service
 from services.rbac_service import RBACService
 from security.dependencies import require_permission
 from core.logger import get_logger
@@ -19,7 +20,7 @@ logger = get_logger("admin_rbac")
 def assign_role(
     user_id: int,
     role_name: str,
-    service: RBACService = Depends(RBACService),
+    service: RBACService = Depends(get_rbac_service),
     db: Session = Depends(get_db),
 ):
     logger.info(f"Assign role attempt: user_id={user_id}, role_name={role_name}")
@@ -51,7 +52,7 @@ def assign_permission(
     role_name: str,
     permission_name: str,
     db: Session = Depends(get_db),
-    service: RBACService = Depends(RBACService),
+    service: RBACService = Depends(get_rbac_service),
 ):
     logger.info(
         f"Assign permission attempt: " f"role={role_name}, permission={permission_name}"

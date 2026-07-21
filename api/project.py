@@ -7,6 +7,7 @@ from schemas.project import ProjectCreate, ProjectResponse
 from security.dependencies import require_permission
 from services.project_service import ProjectService
 from security.auth import get_current_user
+from core.dependencies import get_project_service
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -17,7 +18,7 @@ def create_project(
     data: ProjectCreate,
     db: Session = Depends(get_db),
     user: UserDB = Depends(get_current_user),
-    service: ProjectService = Depends(ProjectService),
+    service: ProjectService = Depends(get_project_service),
     dependencies=Depends(require_permission("project.create")),
 ):
     return service.create_project(db, data, user.user_id)
@@ -28,7 +29,7 @@ def create_project(
 def get_projects(
     db: Session = Depends(get_db),
     user: UserDB = Depends(get_current_user),
-    service: ProjectService = Depends(ProjectService),
+    service: ProjectService = Depends(get_project_service),
     dependencies=Depends(require_permission("project.read")),
 ):
     return service.get_projects(db, user)
@@ -40,7 +41,7 @@ def get_project(
     project_id: int,
     db: Session = Depends(get_db),
     user: UserDB = Depends(get_current_user),
-    service: ProjectService = Depends(ProjectService),
+    service: ProjectService = Depends(get_project_service),
     dependencies=Depends(require_permission("project.read")),
 ):
     return service.get_project(db, project_id, user)

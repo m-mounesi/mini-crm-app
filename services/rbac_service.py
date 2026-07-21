@@ -57,9 +57,7 @@ class RBACService:
         )
 
         role = self.repo.get_role_by_name(db, role_name)
-        logger.info(f"Fetched role: {role_name} -> {role.name}")
         permission = self.repo.get_permission_by_name(db, permission_name)
-        logger.info(f"Fetched permission: {permission_name} -> {permission}")
 
         if not role:
             logger.info(f"Role not found: {role_name}")
@@ -71,6 +69,7 @@ class RBACService:
                 f"Permission '{permission_name}' does not exist"
             )
 
+        logger.info(f"Fetched role: {role_name}, permission: {permission_name}")
         result = self.repo.assign_permission_to_role(db, role.id, permission.id)
 
         logger.info(

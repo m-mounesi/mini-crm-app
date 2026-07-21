@@ -3,7 +3,13 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 
-from core.exceptions import PermissionNotFoundException, RoleNotFoundException
+from core.exceptions import (
+    PermissionNotFoundException,
+    RoleNotFoundException,
+    PermissionDeniedException,
+    UnauthorizedException,
+    InvalidTokenException,
+)
 from core.logger import get_logger
 from schemas.schema import ErrorResponse
 
@@ -13,7 +19,6 @@ logger = get_logger("exception")
 
 async def global_exception_handler(request: Request, exc: Exception):
     # Request Validation Error (for query/path parameters)
-    print("HANDLER RUN:", type(exc))
 
     if isinstance(exc, RequestValidationError):
         errors = {}
@@ -78,6 +83,39 @@ async def global_exception_handler(request: Request, exc: Exception):
                 status_code=404,
                 error_type="PermissionNotFound",
                 message="Permission not found",
+                details=None,
+            ).model_dump(),
+        )
+
+    if isinstance(exc, UnauthorizedException):
+        return JSONResponse(
+            status_code=401,
+            content=ErrorResponse(
+                status_code=401,
+                error_type="Unauthorized",
+                message=str(exc.message),
+                details=None,
+            ).model_dump(),
+        )
+
+    if isinstance(exc, InvalidTokenException):
+        return JSONResponse(
+            status_code=401,
+            content=ErrorResponse(
+                status_code=401,
+                error_type="InvalidToken",
+                message=str(exc.message),
+                details=None,
+            ).model_dump(),
+        )
+
+    if isinstance(exc, PermissionDeniedException):
+        return JSONResponse(
+            status_code=403,
+            content=ErrorResponse(
+                status_code=403,
+                error_type="PermissionDenied",
+                message=str(exc.message),
                 details=None,
             ).model_dump(),
         )

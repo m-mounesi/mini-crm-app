@@ -21,6 +21,17 @@ def get_customer_repository():
 def get_customer_service(repo: CustomerRepository = Depends(get_customer_repository)):
     return CustomerService(repo)
 
+
+# RBAC
+
+
+def get_rbac_repository():
+    return RBACRepository()
+
+
+def get_rbac_service(repo: RBACRepository = Depends(get_rbac_repository)):
+    return RBACService(repo)
+
     # AUTH / USER
 
 
@@ -35,8 +46,9 @@ def get_refresh_token_repository():
 def get_auth_service(
     repo: UserRepository = Depends(get_user_repository),
     refresh_repo: RefreshTokenRepository = Depends(get_refresh_token_repository),
+    rbac_service: RBACService = Depends(get_rbac_service),
 ):
-    return AuthService(repo, refresh_repo)
+    return AuthService(repo, refresh_repo, rbac_service)
 
     # PROJECT
 
@@ -64,14 +76,3 @@ def get_task_service(
     project_service: ProjectService = Depends(get_project_service),
 ):
     return TaskService(repo, project_service)
-
-
-# RBAC
-
-
-def get_rbac_repository():
-    return RBACRepository()
-
-
-def get_rbac_service(repo: RBACRepository = Depends(get_rbac_repository)):
-    return RBACService(repo)

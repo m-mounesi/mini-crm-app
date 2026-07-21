@@ -19,6 +19,11 @@ class ProjectRepository:
 
         return query.all()
 
+    def update(self, db, project: ProjectDB):
+        db.commit()
+        db.refresh(project)
+        return project
+
     def delete(self, db, project: ProjectDB):
         db.delete(project)
         db.commit()

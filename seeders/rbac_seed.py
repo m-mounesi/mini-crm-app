@@ -68,7 +68,7 @@ def assign_admin_permissions(db):
             .first()
         )
 
-    if not exists:
-        db.add(RolePermissionDB(role_id=admin.id, permission_id=permission.id))
+        if not exists:
+            db.add(RolePermissionDB(role_id=admin.id, permission_id=permission.id))
 
     db.commit()

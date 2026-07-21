@@ -16,3 +16,6 @@ class UserRepository:
     def get_user(self, db: Session, username: str):
         user = db.query(UserDB).filter(UserDB.username == username).first()
         return user
+
+    def get_by_id(self, db: Session, user_id: int):
+        return db.query(UserDB).filter(UserDB.user_id == user_id).first()

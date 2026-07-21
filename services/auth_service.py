@@ -114,7 +114,8 @@ class AuthService:
         if (
             not db_token
             or db_token.is_revoked
-            or db_token.expires_at < datetime.now(timezone.utc)
+            or db_token.expires_at.replace(tzinfo=timezone.utc)
+            < datetime.now(timezone.utc)
         ):
             logger.warning("Refresh token not found or revoked")
             raise InvalidTokenException("Refresh token is invalid or has been revoked")

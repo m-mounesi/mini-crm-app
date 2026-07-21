@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from repositories.task_repository import TaskRepository
 from models.task import TaskDB
 from services.project_service import ProjectService
+from repositories.user_repository import UserRepository
 
 
 class TaskService:
@@ -11,6 +12,15 @@ class TaskService:
         self.project_service = project_service
 
     def create_task(self, db, data, user_id: int):
+        project = self.project_service.repo.get_by_id(db, data.project_id)
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
+
+        if data.assigned_to is not None:
+            user_repo = UserRepository()
+            if not user_repo.get_by_id(db, data.assigned_to):
+                raise HTTPException(status_code=404, detail="Assigned user not found")
+
         task = TaskDB(
             title=data.title,
             description=data.description,
@@ -48,7 +58,52 @@ class TaskService:
 
         task.completed = not task.completed
         return self.repo.update(db, task)
-        #   Owner check function
+
+    def update_task(self, db, task_id: int, data, user_id: int):
+        task = self.repo.get_by_id(db, task_id)
+
+        if not task:
+            return None
+
+        if not self.is_owner(db, task_id, user_id):
+            raise HTTPException(
+                status_code=403, detail="Not authorized to access this task"
+            )
+
+        if data.assigned_to is not None:
+            user_repo = UserRepository()
+            if not user_repo.get_by_id(db, data.assigned_to):
+                raise HTTPException(status_code=404, detail="Assigned user not found")
+
+        if data.title is not None:
+            task.title = data.title
+
+        if data.description is not None:
+            task.description = data.description
+
+        if data.completed is not None:
+            task.completed = data.completed
+
+        if data.assigned_to is not None:
+            task.assigned_to = data.assigned_to
+
+        return self.repo.update(db, task)
+
+    def delete_task(self, db, task_id: int, user_id: int):
+        task = self.repo.get_by_id(db, task_id)
+
+        if not task:
+            return None
+
+        if not self.is_owner(db, task_id, user_id):
+            raise HTTPException(
+                status_code=403, detail="Not authorized to access this task"
+            )
+
+        self.repo.delete(db, task)
+        return True
+
+    #   Owner check function
 
     def is_owner(self, db, task_id: int, user_id: int):
         task = self.repo.get_by_id(db, task_id)

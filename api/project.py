@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from core.database import get_db
 from models.user import UserDB
-from schemas.project import ProjectCreate, ProjectResponse
+from schemas.project import ProjectCreate, ProjectUpdate, ProjectResponse
 from security.dependencies import require_permission
 from services.project_service import ProjectService
 from security.auth import get_current_user
@@ -45,3 +45,38 @@ def get_project(
     dependencies=Depends(require_permission("project.read")),
 ):
     return service.get_project(db, project_id, user)
+
+
+# UPDATE
+@router.put("/{project_id}", response_model=ProjectResponse)
+def update_project(
+    project_id: int,
+    data: ProjectUpdate,
+    db: Session = Depends(get_db),
+    user: UserDB = Depends(get_current_user),
+    service: ProjectService = Depends(get_project_service),
+    dependencies=Depends(require_permission("project.update")),
+):
+    project = service.update_project(db, project_id, data, user.user_id)
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    return project
+
+
+# DELETE
+@router.delete("/{project_id}")
+def delete_project(
+    project_id: int,
+    db: Session = Depends(get_db),
+    user: UserDB = Depends(get_current_user),
+    service: ProjectService = Depends(get_project_service),
+    dependencies=Depends(require_permission("project.delete")),
+):
+    result = service.delete_project(db, project_id, user.user_id)
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    return {"message": "Project deleted successfully"}

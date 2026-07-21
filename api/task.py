@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from models.user import UserDB
-from schemas.task import TaskCreate, TaskResponse
+from schemas.task import TaskCreate, TaskUpdate, TaskResponse
 from security.dependencies import require_permission
 from security.auth import get_current_user
 from core.dependencies import get_task_service
@@ -63,3 +63,38 @@ def toggle_task(
         raise HTTPException(status_code=404, detail="Task not found")
 
     return task
+
+
+# UPDATE
+@router.put("/{task_id}", response_model=TaskResponse)
+def update_task(
+    task_id: int,
+    data: TaskUpdate,
+    db: Session = Depends(get_db),
+    user: UserDB = Depends(get_current_user),
+    service: TaskService = Depends(get_task_service),
+    dependencies=Depends(require_permission("task.update")),
+):
+    task = service.update_task(db, task_id, data, user.user_id)
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    return task
+
+
+# DELETE
+@router.delete("/{task_id}")
+def delete_task(
+    task_id: int,
+    db: Session = Depends(get_db),
+    user: UserDB = Depends(get_current_user),
+    service: TaskService = Depends(get_task_service),
+    dependencies=Depends(require_permission("task.delete")),
+):
+    result = service.delete_task(db, task_id, user.user_id)
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    return {"message": "Task deleted successfully"}

@@ -3,14 +3,14 @@ from core.database import get_db
 from sqlalchemy.orm import Session
 from schemas.schema import SuccessResponse
 from services.auth_service import AuthService
-from core.logger import get_logger
+from core.logger import get_logger, get_error_logger
 from fastapi.security import OAuth2PasswordRequestForm
 from core.dependencies import get_auth_service
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 logger = get_logger("auth")
-error_logger = get_logger("error")
+error_logger = get_error_logger()
 
 
 # signup

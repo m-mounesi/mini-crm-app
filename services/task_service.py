@@ -50,8 +50,8 @@ class TaskService:
         return self.repo.update(db, task)
         #   Owner check function
 
-    def is_owner(self, db, customer_id: int, user_id: int):
-        customer = self.repo.get_by_id(db, customer_id)
-        if not customer:
-            raise HTTPException(status_code=404, detail="Customer not found")
-        return customer.created_by == user_id
+    def is_owner(self, db, task_id: int, user_id: int):
+        task = self.repo.get_by_id(db, task_id)
+        if not task:
+            raise HTTPException(status_code=404, detail="Task not found")
+        return task.created_by == user_id

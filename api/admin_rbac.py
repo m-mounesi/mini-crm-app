@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from core.database import get_db
 from services.rbac_service import RBACService
-from security.permissions import require_permission
+from security.dependencies import require_permission
 from core.logger import get_logger
 from schemas.schema import SuccessResponse
 

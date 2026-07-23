@@ -6,6 +6,7 @@ from api.auth import router as auth_router
 from api.task import router as task_router
 from api.admin_rbac import router as admin_rbac_router
 from contextlib import asynccontextmanager
+from core.config import settings
 from core.database import SessionLocal
 from core.exception_handler import global_exception_handler
 from seeders.rbac_seed import seed_roles, seed_permissions, assign_admin_permissions
@@ -31,10 +32,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Mini CRM", lifespan=lifespan)
 
+cors_origins = settings.get_cors_origins_list()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials=len(cors_origins) > 0 and "*" not in cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

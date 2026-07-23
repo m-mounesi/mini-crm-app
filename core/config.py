@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
+from pydantic import Field, field_validator
 
 
 class Settings(BaseSettings):
@@ -9,11 +9,22 @@ class Settings(BaseSettings):
     REFRESH_EXPIRE_DAYS: int = 7
     ADMIN_USERNAME: str = "admin"
     ADMIN_PASSWORD: str = "admin1234"
+    CORS_ORIGINS: str = Field(default="http://localhost:3000")
 
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",
     )
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v: str) -> str:
+        return v
+
+    def get_cors_origins_list(self) -> list[str]:
+        return [
+            origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()
+        ]
 
 
 settings = Settings()

@@ -14,9 +14,6 @@ def get_current_user(
 ):
     payload = decode_access_token(token)
 
-    if not payload:
-        raise UnauthorizedException("Invalid token")
-
     username = payload.get("sub")
     if username is None:
         raise UnauthorizedException("Invalid token: missing username")

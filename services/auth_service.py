@@ -104,9 +104,6 @@ class AuthService:
         # 1 - Decode and verify the jwt refresh token
         payload = decode_refresh_token(refresh_token)
         logger.info(f"payload data {payload}")
-        if payload is None:
-            logger.warning("Invalid refresh token. cannot decode_refresh_token")
-            return None
 
         # 2 - DB check for the refresh token
         db_token = self.refresh_repo.get_by_token(db, refresh_token)

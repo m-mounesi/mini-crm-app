@@ -13,11 +13,8 @@ class RBACService:
     def build_user_context(self, db, user_id: int):
         logger.info(f"Building RBAC context for user_id={user_id}")
 
-        roles_data = self.repo.get_user_roles(db, user_id)
-        permissions_data = self.repo.get_user_permissions(db, user_id)
-
-        roles = [r[0] for r in roles_data]
-        permissions = [p[0] for p in permissions_data]
+        roles = self.repo.get_user_roles(db, user_id)
+        permissions = self.repo.get_user_permissions(db, user_id)
 
         logger.info(
             f"RBAC context built: user_id={user_id}, "

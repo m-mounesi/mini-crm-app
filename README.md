@@ -27,3 +27,5 @@ The project follows a layered architecture with separation between API, services
 - Permission-based endpoint protection
 
 Example permissions:
+ operator.read
+ operator.write

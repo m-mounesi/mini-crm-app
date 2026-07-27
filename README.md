@@ -29,3 +29,6 @@ The project follows a layered architecture with separation between API, services
 Example permissions:
  operator.read
  operator.write
+
+
+It might refactor to Modular monolith 

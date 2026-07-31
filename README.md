@@ -31,4 +31,4 @@ Example permissions:
  operator.write
 
 
-It might refactor to Modular monolith -
+It might refactor to Modular monolith 

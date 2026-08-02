@@ -30,5 +30,5 @@ Example permissions:
  operator.read
  operator.write
 
--
+
 It might refactor to Modular monolith 

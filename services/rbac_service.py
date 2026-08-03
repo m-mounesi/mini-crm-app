@@ -30,7 +30,7 @@ class RBACService:
 
         if not role:
             logger.warning(f"Role not found: role={role_name}")
-            raise ValueError("Role not found")
+            raise RoleNotFoundException(f"Role '{role_name}' does not exist")
 
         exists = self.repo.user_has_role(db, user_id, role.id)
 

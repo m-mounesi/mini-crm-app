@@ -36,7 +36,9 @@ def assign_role(
 
         logger.info(f"Role assigned successfully: user_id={user_id}, role={role_name}")
 
-        return {"message": "role assigned"}
+        return SuccessResponse(
+            message="Role assigned successfully",
+        )
 
     except Exception:
         logger.exception(f"Error assigning role: user_id={user_id}, role={role_name}")

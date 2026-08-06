@@ -65,7 +65,7 @@ class TaskService:
         if not task:
             return None
 
-        if not self.is_owner(db, task_id, user_id):
+        if task.created_by != user_id:
             raise HTTPException(
                 status_code=403, detail="Not authorized to access this task"
             )
@@ -95,7 +95,7 @@ class TaskService:
         if not task:
             return None
 
-        if not self.is_owner(db, task_id, user_id):
+        if task.created_by != user_id:
             raise HTTPException(
                 status_code=403, detail="Not authorized to access this task"
             )

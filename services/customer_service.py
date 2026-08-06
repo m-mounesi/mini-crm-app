@@ -46,7 +46,7 @@ class CustomerService:
         if not customer:
             return None
 
-        if not self.is_owner(db, customer_id, user_id):
+        if customer.created_by != user_id:
             raise HTTPException(
                 status_code=403, detail="Not authorized to access this customer"
             )
@@ -72,7 +72,7 @@ class CustomerService:
         if not customer:
             return None
 
-        if not self.is_owner(db, customer_id, user_id):
+        if customer.created_by != user_id:
             raise HTTPException(
                 status_code=403, detail="Not authorized to access this customer"
             )

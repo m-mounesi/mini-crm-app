@@ -44,7 +44,7 @@ class ProjectService:
         if not project:
             return None
 
-        if not self.is_owner(db, project_id, user_id):
+        if project.created_by != user_id:
             raise HTTPException(
                 status_code=403, detail="Not authorized to access this project"
             )
@@ -63,7 +63,7 @@ class ProjectService:
         if not project:
             return None
 
-        if not self.is_owner(db, project_id, user_id):
+        if project.created_by != user_id:
             raise HTTPException(
                 status_code=403, detail="Not authorized to access this project"
             )

@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from models.project import ProjectDB
 
 
@@ -9,10 +11,14 @@ class ProjectRepository:
         return project
 
     def get_by_id(self, db, project_id: int):
-        return db.query(ProjectDB).filter(ProjectDB.id == project_id).first()
+        return (
+            db.query(ProjectDB)
+            .filter(ProjectDB.id == project_id, ProjectDB.deleted_at.is_(None))
+            .first()
+        )
 
     def get_all(self, db, user_id: int, is_admin: bool):
-        query = db.query(ProjectDB)
+        query = db.query(ProjectDB).filter(ProjectDB.deleted_at.is_(None))
 
         if not is_admin:
             query = query.filter(ProjectDB.created_by == user_id)
@@ -25,5 +31,5 @@ class ProjectRepository:
         return project
 
     def delete(self, db, project: ProjectDB):
-        db.delete(project)
+        project.deleted_at = datetime.now(timezone.utc)
         db.commit()

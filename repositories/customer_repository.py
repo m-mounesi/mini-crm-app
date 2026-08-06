@@ -1,4 +1,5 @@
 from models.customer import CustomerDB
+from datetime import datetime, timezone
 
 
 class CustomerRepository:
@@ -9,10 +10,14 @@ class CustomerRepository:
         return customer
 
     def get_by_id(self, db, customer_id: int):
-        return db.query(CustomerDB).filter(CustomerDB.id == customer_id).first()
+        return (
+            db.query(CustomerDB)
+            .filter(CustomerDB.id == customer_id, CustomerDB.deleted_at.is_(None))
+            .first()
+        )
 
     def get_all(self, db, user_id: int, is_admin: bool, skip: int = 0, limit: int = 10):
-        query = db.query(CustomerDB)
+        query = db.query(CustomerDB).filter(CustomerDB.deleted_at.is_(None))
 
         if not is_admin:
             query = query.filter(CustomerDB.created_by == user_id)
@@ -25,5 +30,5 @@ class CustomerRepository:
         return customer
 
     def delete(self, db, customer: CustomerDB):
-        db.delete(customer)
+        customer.deleted_at = datetime.now(timezone.utc)
         db.commit()

@@ -8,9 +8,12 @@ from api.admin_rbac import router as admin_rbac_router
 from contextlib import asynccontextmanager
 from core.config import settings
 from core.database import SessionLocal
-from core.exception_handler import global_exception_handler
+from core.exception_handler import global_exception_handler, rate_limit_handler
 from seeders.rbac_seed import seed_roles, seed_permissions, assign_admin_permissions
 from seeders.admin_seed import create_admin
+
+from core.limiter import limiter
+from slowapi.errors import RateLimitExceeded
 
 
 @asynccontextmanager
@@ -47,5 +50,10 @@ app.include_router(project_router)
 app.include_router(auth_router)
 app.include_router(task_router)
 app.include_router(admin_rbac_router)
+
+
+app.state.limiter = limiter
+
+app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
 
 app.add_exception_handler(Exception, global_exception_handler)

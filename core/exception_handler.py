@@ -13,7 +13,6 @@ from core.exceptions import (
 from core.logger import get_logger
 from schemas.schema import ErrorResponse
 
-
 logger = get_logger("exception")
 
 
@@ -128,6 +127,18 @@ async def global_exception_handler(request: Request, exc: Exception):
             status_code=500,
             error_type="InternalServerError",
             message="An unexpected error occurred",
+            details=None,
+        ).model_dump(),
+    )
+
+
+async def rate_limit_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=429,
+        content=ErrorResponse(
+            status_code=429,
+            error_type="RateLimitExceeded",
+            message="Too many requests",
             details=None,
         ).model_dump(),
     )

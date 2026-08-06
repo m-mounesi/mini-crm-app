@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, Request, status, HTTPException
 from core.database import get_db
 from sqlalchemy.orm import Session
 from schemas.schema import SuccessResponse
@@ -9,6 +9,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from core.dependencies import get_auth_service
 
 
+from core.limiter import limiter
+
 router = APIRouter(prefix="/auth", tags=["auth"])
 logger = get_logger("auth")
 error_logger = get_error_logger()
@@ -17,7 +19,9 @@ error_logger = get_error_logger()
 # signup
 # =========================
 @router.post("/register", status_code=status.HTTP_201_CREATED)
+@limiter.limit("3/minute")
 def signup(
+    request: Request,
     signupform: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
     service: AuthService = Depends(get_auth_service),
@@ -45,7 +49,9 @@ def signup(
 # LOGIN
 # =========================
 @router.post("/login", status_code=status.HTTP_202_ACCEPTED)
+@limiter.limit("5/minute")
 def login(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
     service: AuthService = Depends(get_auth_service),
@@ -89,7 +95,9 @@ def logout(
 # Refresh Token Endpoint
 # =========================
 @router.post("/refresh", status_code=status.HTTP_200_OK)
+@limiter.limit("10/minute")
 def refresh(
+    request: Request,
     refresh_token: str,
     db: Session = Depends(get_db),
     service: AuthService = Depends(get_auth_service),

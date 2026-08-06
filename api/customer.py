@@ -7,7 +7,6 @@ from models.user import UserDB
 from services.customer_service import CustomerService
 from schemas.customer import CustomerCreate, CustomerUpdate, CustomerResponse
 
-from security.auth import get_current_user
 from security.dependencies import require_permission
 
 router = APIRouter(prefix="/customers", tags=["customers"])
@@ -19,8 +18,7 @@ def create_customer(
     data: CustomerCreate,
     service: CustomerService = Depends(get_customer_service),
     db: Session = Depends(get_db),
-    current_user: UserDB = Depends(get_current_user),
-    dependencies=Depends(require_permission("customer.create")),
+    current_user: UserDB = Depends(require_permission("customer.create")),
 ):
     return service.create_customer(db, data, current_user.user_id)
 
@@ -32,8 +30,7 @@ def get_customers(
     limit: int = 10,
     service: CustomerService = Depends(get_customer_service),
     db: Session = Depends(get_db),
-    current_user: UserDB = Depends(get_current_user),
-    dependencies=Depends(require_permission("customer.read")),
+    current_user: UserDB = Depends(require_permission("customer.read")),
 ):
     return service.get_customers(db, current_user, skip, limit)
 
@@ -44,8 +41,7 @@ def get_customer(
     customer_id: int,
     service: CustomerService = Depends(get_customer_service),
     db: Session = Depends(get_db),
-    current_user: UserDB = Depends(get_current_user),
-    dependencies=Depends(require_permission("customer.read")),
+    current_user: UserDB = Depends(require_permission("customer.read")),
 ):
     customer = service.get_customer(db, customer_id, current_user.user_id)
 
@@ -62,8 +58,7 @@ def update_customer(
     data: CustomerUpdate,
     service: CustomerService = Depends(get_customer_service),
     db: Session = Depends(get_db),
-    current_user: UserDB = Depends(get_current_user),
-    dependencies=Depends(require_permission("customer.update")),
+    current_user: UserDB = Depends(require_permission("customer.update")),
 ):
     customer = service.update_customer(db, customer_id, data, current_user.user_id)
 
@@ -79,8 +74,7 @@ def delete_customer(
     customer_id: int,
     db: Session = Depends(get_db),
     service: CustomerService = Depends(get_customer_service),
-    current_user: UserDB = Depends(get_current_user),
-    dependencies=Depends(require_permission("customer.delete")),
+    current_user: UserDB = Depends(require_permission("customer.delete")),
 ):
     result = service.delete_customer(db, customer_id, current_user.user_id)
 

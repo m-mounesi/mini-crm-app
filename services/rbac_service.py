@@ -49,8 +49,7 @@ class RBACService:
 
     def assign_permission(self, db, role_name: str, permission_name: str):
         logger.info(
-            f"Assign permission attempt: role={role_name}, "
-            f"permission={permission_name}"
+            f"Assign permission attempt: role={role_name}, permission={permission_name}"
         )
 
         role = self.repo.get_role_by_name(db, role_name)

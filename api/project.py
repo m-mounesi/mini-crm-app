@@ -6,7 +6,6 @@ from models.user import UserDB
 from schemas.project import ProjectCreate, ProjectUpdate, ProjectResponse
 from security.dependencies import require_permission
 from services.project_service import ProjectService
-from security.auth import get_current_user
 from core.dependencies import get_project_service
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -17,9 +16,8 @@ router = APIRouter(prefix="/projects", tags=["projects"])
 def create_project(
     data: ProjectCreate,
     db: Session = Depends(get_db),
-    user: UserDB = Depends(get_current_user),
     service: ProjectService = Depends(get_project_service),
-    dependencies=Depends(require_permission("project.create")),
+    user: UserDB = Depends(require_permission("project.create")),
 ):
     return service.create_project(db, data, user.user_id)
 
@@ -28,9 +26,8 @@ def create_project(
 @router.get("/", response_model=list[ProjectResponse])
 def get_projects(
     db: Session = Depends(get_db),
-    user: UserDB = Depends(get_current_user),
     service: ProjectService = Depends(get_project_service),
-    dependencies=Depends(require_permission("project.read")),
+    user: UserDB = Depends(require_permission("project.read")),
 ):
     return service.get_projects(db, user)
 
@@ -40,9 +37,8 @@ def get_projects(
 def get_project(
     project_id: int,
     db: Session = Depends(get_db),
-    user: UserDB = Depends(get_current_user),
     service: ProjectService = Depends(get_project_service),
-    dependencies=Depends(require_permission("project.read")),
+    user: UserDB = Depends(require_permission("project.read")),
 ):
     return service.get_project(db, project_id, user)
 
@@ -53,9 +49,8 @@ def update_project(
     project_id: int,
     data: ProjectUpdate,
     db: Session = Depends(get_db),
-    user: UserDB = Depends(get_current_user),
     service: ProjectService = Depends(get_project_service),
-    dependencies=Depends(require_permission("project.update")),
+    user: UserDB = Depends(require_permission("project.update")),
 ):
     project = service.update_project(db, project_id, data, user.user_id)
 
@@ -70,9 +65,8 @@ def update_project(
 def delete_project(
     project_id: int,
     db: Session = Depends(get_db),
-    user: UserDB = Depends(get_current_user),
     service: ProjectService = Depends(get_project_service),
-    dependencies=Depends(require_permission("project.delete")),
+    user: UserDB = Depends(require_permission("project.delete")),
 ):
     result = service.delete_project(db, project_id, user.user_id)
 

@@ -5,7 +5,6 @@ from core.database import get_db
 from models.user import UserDB
 from schemas.task import TaskCreate, TaskUpdate, TaskResponse
 from security.dependencies import require_permission
-from security.auth import get_current_user
 from core.dependencies import get_task_service
 from services.task_service import TaskService
 
@@ -17,9 +16,8 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
 def create_task(
     data: TaskCreate,
     db: Session = Depends(get_db),
-    user: UserDB = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
-    dependencies=Depends(require_permission("task.create")),
+    user: UserDB = Depends(require_permission("task.create")),
 ):
     return service.create_task(db, data, user.user_id)
 
@@ -29,9 +27,8 @@ def create_task(
 def get_tasks(
     project_id: int,
     db: Session = Depends(get_db),
-    user: UserDB = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
-    dependencies=Depends(require_permission("task.read")),
+    user: UserDB = Depends(require_permission("task.read")),
 ):
     return service.get_tasks(db, project_id, user_id=user.user_id)
 
@@ -41,9 +38,8 @@ def get_tasks(
 def get_task(
     task_id: int,
     db: Session = Depends(get_db),
-    user: UserDB = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
-    dependencies=Depends(require_permission("task.read")),
+    user: UserDB = Depends(require_permission("task.read")),
 ):
     return service.get_task(db, task_id, user.user_id)
 
@@ -53,9 +49,8 @@ def get_task(
 def toggle_task(
     task_id: int,
     db: Session = Depends(get_db),
-    user: UserDB = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
-    dependencies=Depends(require_permission("task.update")),
+    user: UserDB = Depends(require_permission("task.update")),
 ):
     task = service.toggle_task(db, task_id, user.user_id)
 
@@ -71,9 +66,8 @@ def update_task(
     task_id: int,
     data: TaskUpdate,
     db: Session = Depends(get_db),
-    user: UserDB = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
-    dependencies=Depends(require_permission("task.update")),
+    user: UserDB = Depends(require_permission("task.update")),
 ):
     task = service.update_task(db, task_id, data, user.user_id)
 
@@ -88,9 +82,8 @@ def update_task(
 def delete_task(
     task_id: int,
     db: Session = Depends(get_db),
-    user: UserDB = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
-    dependencies=Depends(require_permission("task.delete")),
+    user: UserDB = Depends(require_permission("task.delete")),
 ):
     result = service.delete_task(db, task_id, user.user_id)
 

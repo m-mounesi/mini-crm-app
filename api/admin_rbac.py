@@ -57,7 +57,7 @@ def assign_permission(
     service: RBACService = Depends(get_rbac_service),
 ):
     logger.info(
-        f"Assign permission attempt: " f"role={role_name}, permission={permission_name}"
+        f"Assign permission attempt: role={role_name}, permission={permission_name}"
     )
 
     service.assign_permission(db, role_name, permission_name)

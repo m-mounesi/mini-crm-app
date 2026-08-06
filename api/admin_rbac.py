@@ -26,16 +26,8 @@ def assign_role(
     logger.info(f"Assign role attempt: user_id={user_id}, role_name={role_name}")
 
     try:
-        result = service.assign_role(db, user_id, role_name)
-
-        if result is None:
-            logger.warning(
-                f"Assign role failed: user_id={user_id}, role={role_name} not found"
-            )
-            return {"message": "role or user not found"}
-
+        service.assign_role(db, user_id, role_name)
         logger.info(f"Role assigned successfully: user_id={user_id}, role={role_name}")
-
         return SuccessResponse(
             message="Role assigned successfully",
         )

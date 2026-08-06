@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from core.database import get_db
 from sqlalchemy.orm import Session
 from schemas.schema import SuccessResponse
+from schemas.user import TokenResponse
 from services.auth_service import AuthService
 from core.logger import get_logger, get_error_logger
 from fastapi.security import OAuth2PasswordRequestForm
@@ -59,10 +60,10 @@ def login(
         )
 
     logger.info(f"User logged in successfully: {form_data.username}")
-    return {
-        "access_token": tokens["access_token"],
-        "refresh_token": tokens["refresh_token"],
-    }
+    return TokenResponse(
+        access_token=tokens["access_token"],
+        refresh_token=tokens["refresh_token"],
+    )
 
 
 # Logout
@@ -82,7 +83,7 @@ def logout(
 
     logger.info("User logged out successfully")
 
-    return {"message": "Logged out successfully"}
+    return SuccessResponse(status_code=200, message="User logged out successfully")
 
 
 # Refresh Token Endpoint
@@ -102,7 +103,9 @@ def refresh(
             logger.warning("Invalid refresh token. cannot refresh_tokens")
             raise HTTPException(status_code=401, detail="Invalid refresh token")
 
-        return tokens
+        return TokenResponse(
+            access_token=tokens["access_token"], refresh_token=tokens["refresh_token"]
+        )
 
     except Exception as e:
         logger.error(f"Error occurred while refreshing token: {repr(e)}")

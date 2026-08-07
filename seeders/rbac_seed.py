@@ -14,21 +14,25 @@ PERMISSIONS = [
     "customer.read",
     "customer.update",
     "customer.delete",
+    "customer.restore",
     # Project
     "project.create",
     "project.read",
     "project.update",
     "project.delete",
+    "project.restore",
     # Task
     "task.create",
     "task.read",
     "task.update",
     "task.delete",
+    "task.restore",
     # Note
     "note.create",
     "note.read",
     "note.update",
     "note.delete",
+    "note.restore",
     # User Management
     "user.manage",
 ]

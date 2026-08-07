@@ -29,3 +29,8 @@ class UnauthorizedException(AppException):
 class InvalidTokenException(AppException):
     status_code = 401
     error_type = "InvalidToken"
+
+
+class CustomerNotFoundException(AppException):
+    status_code = 404
+    error_type = "CustomerNotFound"

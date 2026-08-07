@@ -80,6 +80,12 @@ class CustomerService:
         self.repo.delete(db, customer)
         return True
 
+    # RESTORE
+    def restore_customer(self, db, customer_id, user: UserDB):
+        is_admin = any(role.name == "admin" for role in user.roles)
+
+        return self.repo.restore(db, customer_id, user.user_id, is_admin)
+
     #   Owner check function
     def is_owner(self, db, customer_id: int, user_id: int):
         customer = self.repo.get_by_id(db, customer_id)

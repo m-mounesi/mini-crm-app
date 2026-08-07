@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from core.dependencies import get_customer_service
 from models.user import UserDB
+from schemas.schema import SuccessResponse
 from services.customer_service import CustomerService
 from schemas.customer import CustomerCreate, CustomerUpdate, CustomerResponse
 
@@ -82,3 +83,21 @@ def delete_customer(
         raise HTTPException(status_code=404, detail="Customer not found")
 
     return {"message": "Customer deleted successfully"}
+
+
+# Restore
+@router.post("/{customer_id}/restore")
+def restore_customer(
+    customer_id: int,
+    db: Session = Depends(get_db),
+    service: CustomerService = Depends(get_customer_service),
+    current_user: UserDB = Depends(require_permission("customer.restore")),
+):
+    customer = service.restore_customer(db, customer_id, current_user)
+
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+
+    return SuccessResponse(
+        message="Customer restored successfully", data=f"customer : {customer.name} "
+    )

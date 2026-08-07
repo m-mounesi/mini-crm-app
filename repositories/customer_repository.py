@@ -1,3 +1,4 @@
+from core.exceptions import CustomerNotFoundException
 from models.customer import CustomerDB
 from datetime import datetime, timezone
 
@@ -25,6 +26,33 @@ class CustomerRepository:
         return query.offset(skip).limit(limit).all()
 
     def update(self, db, customer: CustomerDB):
+        db.commit()
+        db.refresh(customer)
+        return customer
+
+    # def get_trash(self, db, user_id: int, is_admin: bool):
+    #     query = db.query(CustomerDB).filter(CustomerDB.deleted_at.is_not(None))
+
+    #     if not is_admin:
+    #         query = query.filter(CustomerDB.created_by == user_id)
+
+    #     return query.all()
+
+    def restore(self, db, customer_id: int, user_id, is_admin: bool):
+        customer: CustomerDB = (
+            db.query(CustomerDB).filter(CustomerDB.id == customer_id).first()
+        )
+
+        if not customer:
+            raise CustomerNotFoundException("Customer not found")
+
+        if not is_admin:
+            if customer.created_by == user_id:
+                customer.deleted_at = None
+                db.refresh(customer)
+                return customer
+
+        customer.deleted_at = None
         db.commit()
         db.refresh(customer)
         return customer

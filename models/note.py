@@ -2,6 +2,7 @@ from sqlalchemy import String, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 from core.database import Base
+from datetime import datetime
 
 
 class NoteDB(Base):
@@ -21,6 +22,6 @@ class NoteDB(Base):
     updated_at = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-    deleted_at: Mapped[DateTime | None] = mapped_column(
+    deleted_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )

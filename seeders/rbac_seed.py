@@ -24,6 +24,11 @@ PERMISSIONS = [
     "task.read",
     "task.update",
     "task.delete",
+    # Note
+    "note.create",
+    "note.read",
+    "note.update",
+    "note.delete",
     # User Management
     "user.manage",
 ]

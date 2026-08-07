@@ -12,11 +12,9 @@ def require_permission(permission: str):
         current_user=Depends(get_current_user), db: Session = Depends(get_db)
     ):
         repo = RBACRepository()
-        permissions = repo.get_user_permissions(db, current_user.user_id)
-        permission_names = [p[0] for p in permissions]
-        has_access = permission in permission_names
+        permission_names = repo.get_user_permissions(db, current_user.user_id)
 
-        if not has_access:
+        if permission not in permission_names:
             raise PermissionDeniedException(
                 "You do not have permission to perform this action."
             )

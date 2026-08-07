@@ -1,0 +1,83 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from core.database import get_db
+from core.dependencies import get_note_service
+from models.user import UserDB
+from services.note_service import NoteService
+from schemas.note import NoteCreate, NoteUpdate, NoteResponse
+from security.dependencies import require_permission
+
+router = APIRouter(prefix="/notes", tags=["notes"])
+
+
+# CREATE Note
+@router.post("/", response_model=NoteResponse)
+def create_note(
+    data: NoteCreate,
+    service: NoteService = Depends(get_note_service),
+    db: Session = Depends(get_db),
+    current_user: UserDB = Depends(require_permission("note.create")),
+):
+    return service.create_note(db, data, current_user.user_id)
+
+
+# GET ALL
+@router.get("/", response_model=list[NoteResponse])
+def get_notes(
+    skip: int = 0,
+    limit: int = 10,
+    service: NoteService = Depends(get_note_service),
+    db: Session = Depends(get_db),
+    current_user: UserDB = Depends(require_permission("note.read")),
+):
+    return service.get_notes(db, current_user, skip, limit)
+
+
+# GET BY ID
+@router.get("/{note_id}", response_model=NoteResponse)
+def get_note(
+    note_id: int,
+    service: NoteService = Depends(get_note_service),
+    db: Session = Depends(get_db),
+    current_user: UserDB = Depends(require_permission("note.read")),
+):
+    note = service.get_note(db, note_id, current_user.user_id)
+
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+
+    return note
+
+
+# UPDATE
+@router.put("/{note_id}", response_model=NoteResponse)
+def update_note(
+    note_id: int,
+    data: NoteUpdate,
+    service: NoteService = Depends(get_note_service),
+    db: Session = Depends(get_db),
+    current_user: UserDB = Depends(require_permission("note.update")),
+):
+    note = service.update_note(db, note_id, data, current_user.user_id)
+
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+
+    return note
+
+
+# DELETE
+@router.delete("/{note_id}")
+def delete_note(
+    note_id: int,
+    db: Session = Depends(get_db),
+    service: NoteService = Depends(get_note_service),
+    current_user: UserDB = Depends(require_permission("note.delete")),
+):
+    result = service.delete_note(db, note_id, current_user.user_id)
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Note not found")
+
+    return {"message": "Note deleted successfully"}

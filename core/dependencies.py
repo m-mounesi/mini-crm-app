@@ -6,11 +6,13 @@ from repositories.refresh_token_repository import RefreshTokenRepository
 from repositories.task_repository import TaskRepository
 from repositories.user_repository import UserRepository
 from repositories.rbac_repository import RBACRepository
+from repositories.note_repository import NoteRepository
 from services.project_service import ProjectService
 from services.rbac_service import RBACService
 from services.task_service import TaskService
 from services.auth_service import AuthService
 from services.customer_service import CustomerService
+from services.note_service import NoteService
 
 
 # CUSTOMER
@@ -76,3 +78,14 @@ def get_task_service(
     project_service: ProjectService = Depends(get_project_service),
 ):
     return TaskService(repo, project_service)
+
+
+# NOTE
+
+
+def get_note_repository():
+    return NoteRepository()
+
+
+def get_note_service(repo: NoteRepository = Depends(get_note_repository)):
+    return NoteService(repo)

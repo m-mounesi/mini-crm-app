@@ -5,6 +5,7 @@ from api.project import router as project_router
 from api.auth import router as auth_router
 from api.task import router as task_router
 from api.admin_rbac import router as admin_rbac_router
+from api.note import router as note_router
 from contextlib import asynccontextmanager
 from core.config import settings
 from core.database import SessionLocal
@@ -14,6 +15,7 @@ from seeders.admin_seed import create_admin
 
 from core.limiter import limiter
 from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 
 @asynccontextmanager
@@ -50,7 +52,10 @@ app.include_router(project_router)
 app.include_router(auth_router)
 app.include_router(task_router)
 app.include_router(admin_rbac_router)
+app.include_router(note_router)
 
+
+app.add_middleware(SlowAPIMiddleware)
 
 app.state.limiter = limiter
 

@@ -1,4 +1,4 @@
-from core.exceptions import CustomerNotFoundException
+from core.exceptions import CustomerNotFoundException, PermissionDeniedException
 from models.customer import CustomerDB
 from datetime import datetime, timezone
 
@@ -46,15 +46,13 @@ class CustomerRepository:
         if not customer:
             raise CustomerNotFoundException("Customer not found")
 
-        if not is_admin:
-            if customer.created_by == user_id:
-                customer.deleted_at = None
-                db.refresh(customer)
-                return customer
+        if not is_admin and customer.created_by != user_id:
+            raise PermissionDeniedException("You cannot restore this customer.")
 
         customer.deleted_at = None
         db.commit()
         db.refresh(customer)
+
         return customer
 
     def delete(self, db, customer: CustomerDB):

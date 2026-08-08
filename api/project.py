@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from models.user import UserDB
 from schemas.project import ProjectCreate, ProjectUpdate, ProjectResponse
+from schemas.schema import SuccessResponse
 from security.dependencies import require_permission
 from services.project_service import ProjectService
 from core.dependencies import get_project_service
@@ -74,3 +75,21 @@ def delete_project(
         raise HTTPException(status_code=404, detail="Project not found")
 
     return {"message": "Project deleted successfully"}
+
+
+# Restore
+@router.post("/{project_id}/restore")
+def restore_project(
+    project_id: int,
+    db: Session = Depends(get_db),
+    service: ProjectService = Depends(get_project_service),
+    current_user: UserDB = Depends(require_permission("project.restore")),
+):
+    project = service.restore_project(db, project_id, current_user)
+
+    if not project:
+        raise HTTPException(status_code=404, detail="project not found")
+
+    return SuccessResponse(
+        message="Project restored successfully", data=f"project : {project.title} "
+    )

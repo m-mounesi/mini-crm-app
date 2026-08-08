@@ -71,6 +71,12 @@ class ProjectService:
         self.repo.delete(db, project)
         return True
 
+    # RESTORE
+    def restore_project(self, db, project_id, user: UserDB):
+        is_admin = any(role.name == "admin" for role in user.roles)
+
+        return self.repo.restore(db, project_id, user.user_id, is_admin)
+
     #   Owner check function
     def is_owner(self, db, project_id: int, user_id: int):
         project = self.repo.get_by_id(db, project_id)

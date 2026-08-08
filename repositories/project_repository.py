@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from core.exceptions import PermissionDeniedException, ProjectNotFoundException
 from models.project import ProjectDB
 
 
@@ -33,3 +34,20 @@ class ProjectRepository:
     def delete(self, db, project: ProjectDB):
         project.deleted_at = datetime.now(timezone.utc)
         db.commit()
+
+    def restore(self, db, project_id: int, user_id, is_admin: bool):
+        project: ProjectDB = (
+            db.query(ProjectDB).filter(ProjectDB.id == project_id).first()
+        )
+
+        if not project:
+            raise ProjectNotFoundException("project not found")
+
+        if not is_admin and project.created_by != user_id:
+            raise PermissionDeniedException("You cannot restore this customer.")
+
+        project.deleted_at = None
+        db.commit()
+        db.refresh(project)
+
+        return project

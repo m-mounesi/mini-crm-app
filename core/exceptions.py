@@ -34,3 +34,8 @@ class InvalidTokenException(AppException):
 class CustomerNotFoundException(AppException):
     status_code = 404
     error_type = "CustomerNotFound"
+
+
+class ProjectNotFoundException(AppException):
+    status_code = 404
+    error_type = "ProjectNotFound"

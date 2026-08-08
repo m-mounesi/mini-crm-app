@@ -39,3 +39,8 @@ class CustomerNotFoundException(AppException):
 class ProjectNotFoundException(AppException):
     status_code = 404
     error_type = "ProjectNotFound"
+
+
+class TaskNotFoundException(AppException):
+    status_code = 404
+    error_type = "TaskNotFound"

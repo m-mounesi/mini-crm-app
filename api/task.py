@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from models.user import UserDB
 from schemas.task import TaskCreate, TaskUpdate, TaskResponse
+from schemas.schema import SuccessResponse
 from security.dependencies import require_permission
 from core.dependencies import get_task_service
 from services.task_service import TaskService
@@ -91,3 +92,21 @@ def delete_task(
         raise HTTPException(status_code=404, detail="Task not found")
 
     return {"message": "Task deleted successfully"}
+
+
+# Restore
+@router.post("/{task_id}/restore")
+def restore_task(
+    task_id: int,
+    db: Session = Depends(get_db),
+    service: TaskService = Depends(get_task_service),
+    current_user: UserDB = Depends(require_permission("task.restore")),
+):
+    task = service.restore_task(db, task_id, current_user)
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    return SuccessResponse(
+        message="Task restored successfully", data=f"task : {task.title} "
+    )

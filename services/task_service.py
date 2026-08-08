@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 
+from models.user import UserDB
 from repositories.task_repository import TaskRepository
 from models.task import TaskDB
 from services.project_service import ProjectService
@@ -102,6 +103,12 @@ class TaskService:
 
         self.repo.delete(db, task)
         return True
+
+    # RESTORE
+    def restore_task(self, db, task_id, user: UserDB):
+        is_admin = any(role.name == "admin" for role in user.roles)
+
+        return self.repo.restore(db, task_id, user.user_id, is_admin)
 
     #   Owner check function
 

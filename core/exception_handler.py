@@ -7,6 +7,7 @@ from core.exceptions import (
     PermissionNotFoundException,
     RoleNotFoundException,
     PermissionDeniedException,
+    TaskNotFoundException,
     UnauthorizedException,
     InvalidTokenException,
 )
@@ -119,6 +120,17 @@ async def global_exception_handler(request: Request, exc: Exception):
             ).model_dump(),
         )
 
+    if isinstance(exc, TaskNotFoundException):
+        return JSONResponse(
+            status_code=404,
+            content=ErrorResponse(
+                status_code=404,
+                error_type="TaskNotFound",
+                message="Task not found",
+                details=None,
+            ).model_dump(),
+        )
+    
     # Unknown Error (500)
     logger.exception("Unhandled server error occurred", exc_info=exc)
     return JSONResponse(
@@ -130,6 +142,8 @@ async def global_exception_handler(request: Request, exc: Exception):
             details=None,
         ).model_dump(),
     )
+
+   
 
 
 async def rate_limit_handler(request: Request, exc: Exception):

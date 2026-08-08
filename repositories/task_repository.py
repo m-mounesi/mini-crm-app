@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from core.exceptions import PermissionDeniedException, TaskNotFoundException
 from models.task import TaskDB
 
 
@@ -33,3 +34,18 @@ class TaskRepository:
     def delete(self, db, task: TaskDB):
         task.deleted_at = datetime.now(timezone.utc)
         db.commit()
+
+    def restore(self, db, task_id: int, user_id, is_admin: bool):
+        task: TaskDB = db.query(TaskDB).filter(TaskDB.id == task_id).first()
+
+        if not task:
+            raise TaskNotFoundException("Task not found")
+
+        if not is_admin and task.created_by != user_id:
+            raise PermissionDeniedException("You cannot restore this task.")
+
+        task.deleted_at = None
+        db.commit()
+        db.refresh(task)
+
+        return task

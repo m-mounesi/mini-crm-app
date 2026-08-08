@@ -44,3 +44,8 @@ class ProjectNotFoundException(AppException):
 class TaskNotFoundException(AppException):
     status_code = 404
     error_type = "TaskNotFound"
+
+
+class NoteNotFoundException(AppException):
+    status_code = 404
+    error_type = "TaskNotFound"

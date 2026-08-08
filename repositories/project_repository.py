@@ -44,7 +44,7 @@ class ProjectRepository:
             raise ProjectNotFoundException("project not found")
 
         if not is_admin and project.created_by != user_id:
-            raise PermissionDeniedException("You cannot restore this customer.")
+            raise PermissionDeniedException("You cannot restore this project.")
 
         project.deleted_at = None
         db.commit()

@@ -128,8 +128,8 @@ async def global_exception_handler(request: Request, exc: Exception):
             status_code=404,
             content=ErrorResponse(
                 status_code=404,
-                error_type="TaskNotFound",
-                message="Task not found",
+                error_type="CustomerNotFound",
+                message="Customer not found",
                 details=None,
             ).model_dump(),
         )
@@ -139,8 +139,8 @@ async def global_exception_handler(request: Request, exc: Exception):
             status_code=404,
             content=ErrorResponse(
                 status_code=404,
-                error_type="TaskNotFound",
-                message="Task not found",
+                error_type="ProjectNotFound",
+                message="Project not found",
                 details=None,
             ).model_dump(),
         )
@@ -161,8 +161,8 @@ async def global_exception_handler(request: Request, exc: Exception):
             status_code=404,
             content=ErrorResponse(
                 status_code=404,
-                error_type="TaskNotFound",
-                message="Task not found",
+                error_type="NoteNotFound",
+                message="Note not found",
                 details=None,
             ).model_dump(),
         )

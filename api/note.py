@@ -6,6 +6,7 @@ from core.dependencies import get_note_service
 from models.user import UserDB
 from services.note_service import NoteService
 from schemas.note import NoteCreate, NoteUpdate, NoteResponse
+from schemas.schema import SuccessResponse
 from security.dependencies import require_permission
 
 router = APIRouter(prefix="/notes", tags=["notes"])
@@ -81,3 +82,21 @@ def delete_note(
         raise HTTPException(status_code=404, detail="Note not found")
 
     return {"message": "Note deleted successfully"}
+
+
+# Restore
+@router.post("/{note_id}/restore")
+def restore_note(
+    note_id: int,
+    db: Session = Depends(get_db),
+    service: NoteService = Depends(get_note_service),
+    current_user: UserDB = Depends(require_permission("note.restore")),
+):
+    note = service.restore_note(db, note_id, current_user)
+
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+
+    return SuccessResponse(
+        message="Note restored successfully", data=f"note : {note.content[:30]}... "
+    )

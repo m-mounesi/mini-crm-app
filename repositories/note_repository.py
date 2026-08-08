@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from core.exceptions import NoteNotFoundException, PermissionDeniedException
 from models.note import NoteDB
 
 
@@ -33,3 +34,18 @@ class NoteRepository:
     def delete(self, db, note: NoteDB):
         note.deleted_at = datetime.now(timezone.utc)
         db.commit()
+
+    def restore(self, db, note_id: int, user_id, is_admin: bool):
+        note: NoteDB = db.query(NoteDB).filter(NoteDB.id == note_id).first()
+
+        if not note:
+            raise NoteNotFoundException("Note not found")
+
+        if not is_admin and note.created_by != user_id:
+            raise PermissionDeniedException("You cannot restore this note.")
+
+        note.deleted_at = None
+        db.commit()
+        db.refresh(note)
+
+        return note

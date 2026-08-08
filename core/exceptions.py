@@ -48,4 +48,4 @@ class TaskNotFoundException(AppException):
 
 class NoteNotFoundException(AppException):
     status_code = 404
-    error_type = "TaskNotFound"
+    error_type = "NoteNotFound"

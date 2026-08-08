@@ -77,6 +77,12 @@ class NoteService:
         self.repo.delete(db, note)
         return True
 
+    # RESTORE
+    def restore_note(self, db, note_id, user: UserDB):
+        is_admin = any(role.name == "admin" for role in user.roles)
+
+        return self.repo.restore(db, note_id, user.user_id, is_admin)
+
     # Owner check function
     def is_owner(self, db, note_id: int, user_id: int):
         note = self.repo.get_by_id(db, note_id)
